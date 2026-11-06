@@ -8,7 +8,11 @@ export type EventType =
   | 'purchase_skipped'
   | 'cart_abandoned'
   | 'purchase_completed'
-  | 'quest_completed';
+  | 'quest_completed'
+  | 'goal_contribution'
+  | 'milestone_reached'
+  | 'spending_reviewed'
+  | 'purchase_reconsidered';
 
 export interface Expense {
   id: string;
@@ -46,6 +50,10 @@ export interface GameState {
   quests: Record<string, QuestRecord>;
   achievements: Record<string, string>;
   events: GameEvent[];
+  /** Marketplace items the player chose to save for later. */
+  wishlist: string[];
+  /** Server-granted savings milestone ids whose XP has been applied (each once). */
+  claimedRewards: Record<string, string>;
 }
 
 export interface PlayerStats {

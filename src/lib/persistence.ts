@@ -16,6 +16,10 @@ const EVENT_TYPES = [
   'cart_abandoned',
   'purchase_completed',
   'quest_completed',
+  'goal_contribution',
+  'milestone_reached',
+  'spending_reviewed',
+  'purchase_reconsidered',
 ];
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -118,7 +122,20 @@ function sanitizeState(value: unknown): GameState | null {
     quests,
     achievements,
     events: value.events.filter(isEvent),
+    wishlist: Array.isArray(value.wishlist)
+      ? [...new Set(value.wishlist.filter((id): id is string => typeof id === 'string' && id.length <= 64))].slice(0, 50)
+      : [],
+    claimedRewards: sanitizeClaimedRewards(value.claimedRewards),
   };
+}
+
+function sanitizeClaimedRewards(value: unknown): Record<string, string> {
+  if (!isRecord(value)) return {};
+  const result: Record<string, string> = {};
+  for (const [id, at] of Object.entries(value)) {
+    if (/^[0-9a-f-]{36}$/i.test(id) && typeof at === 'string') result[id] = at;
+  }
+  return result;
 }
 
 function readLegacyLocalState(): GameState | null {

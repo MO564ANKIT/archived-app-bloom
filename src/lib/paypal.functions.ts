@@ -2,22 +2,31 @@ import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeader, getRequestUrl } from "@tanstack/react-start/server";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
+export type CheckoutAction = "create" | "contribute" | "capture" | "cancel";
+
 export interface CheckoutInput {
-  action: "create" | "capture" | "cancel";
+  action: CheckoutAction;
   itemIds?: string[];
   orderId?: string;
+  goalId?: string;
+  amountCents?: number;
 }
 
 export interface CheckoutBody {
   orderId?: string;
   approveUrl?: string;
   status?: string;
+  kind?: "shop" | "goal_contribution";
   itemIds?: string[];
+  goalId?: string | null;
   amountCents?: number;
+  milestones?: number[];
   message?: string;
 }
 
 export type CheckoutResponse = { ok: true; body: CheckoutBody } | { ok: false; error: string };
+
+const ACTIONS: CheckoutAction[] = ["create", "contribute", "capture", "cancel"];
 
 function resolveOrigin(): string | null {
   const origin = getRequestHeader("origin");
@@ -32,23 +41,30 @@ function resolveOrigin(): string | null {
 export const paypalCheckout = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: CheckoutInput) => {
-    if (!input || !["create", "capture", "cancel"].includes(input.action)) {
+    if (!input || !ACTIONS.includes(input.action)) {
       throw new Error("Unknown checkout action.");
     }
     return {
       action: input.action,
       itemIds: Array.isArray(input.itemIds) ? input.itemIds.slice(0, 50) : undefined,
       orderId: typeof input.orderId === "string" ? input.orderId.slice(0, 64) : undefined,
+      goalId: typeof input.goalId === "string" ? input.goalId.slice(0, 64) : undefined,
+      amountCents: typeof input.amountCents === "number" ? input.amountCents : undefined,
     } satisfies CheckoutInput;
   })
   .handler(async ({ data, context }): Promise<CheckoutResponse> => {
     try {
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
       const checkout = await import("./checkout-server/paypal.server");
+      if (!checkout.paypalConfigured()) {
+        return { ok: false, error: "PayPal Sandbox is not set up yet, so checkout is unavailable." };
+      }
       const { userId } = context;
       switch (data.action) {
         case "create":
           return await checkout.createOrder(supabaseAdmin, userId, data.itemIds, resolveOrigin());
+        case "contribute":
+          return await checkout.createGoalContribution(supabaseAdmin, userId, data.goalId, data.amountCents, resolveOrigin());
         case "capture":
           return await checkout.captureOrder(supabaseAdmin, userId, data.orderId);
         case "cancel":

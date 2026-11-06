@@ -1,15 +1,17 @@
 import { motion } from 'framer-motion';
-import { FlaskConical, LayoutDashboard, MessageCircle, PawPrint, Receipt, Scroll, ShoppingBag, type LucideIcon } from 'lucide-react';
+import { FlaskConical, LayoutDashboard, MessageCircle, PawPrint, PiggyBank, Receipt, Scroll, ShoppingBag, Vault, type LucideIcon } from 'lucide-react';
 
-export type PageId = 'dashboard' | 'expenses' | 'monsters' | 'quests' | 'lab' | 'shop' | 'roast';
+export type PageId = 'dashboard' | 'expenses' | 'goals' | 'monsters' | 'quests' | 'lab' | 'shop' | 'vault' | 'roast';
 
 const NAV_ITEMS: { id: PageId; label: string; icon: LucideIcon }[] = [
   { id: 'dashboard', label: 'Home', icon: LayoutDashboard },
   { id: 'expenses', label: 'Spend', icon: Receipt },
+  { id: 'goals', label: 'Save to Level', icon: PiggyBank },
   { id: 'quests', label: 'Quests', icon: Scroll },
   { id: 'monsters', label: 'Monsters', icon: PawPrint },
   { id: 'lab', label: 'Money Lab', icon: FlaskConical },
-  { id: 'shop', label: 'Loot Shop', icon: ShoppingBag },
+  { id: 'shop', label: 'Marketplace', icon: ShoppingBag },
+  { id: 'vault', label: 'Vault', icon: Vault },
   { id: 'roast', label: 'Roast', icon: MessageCircle },
 ];
 

@@ -17,7 +17,10 @@ export type GameAction = { at: string } & (
       monthlyBudgetPaise: number | null;
       categoryBudgetsPaise: Partial<Record<Category, number>>;
     }
-  | { type: 'recordEvent'; eventType: Exclude<EventType, 'expense_logged' | 'quest_completed'> }
+  | { type: 'recordEvent'; eventType: Exclude<EventType, 'expense_logged' | 'quest_completed' | 'milestone_reached'> }
+  | { type: 'saveForLater'; itemIds: string[] }
+  | { type: 'removeFromWishlist'; itemId: string }
+  | { type: 'claimMilestoneRewards'; rewards: { id: string; xp: number }[] }
   | { type: 'startQuest'; questId: string }
   | { type: 'claimQuest'; questId: string }
   | { type: 'setFeatured'; monsterId: MonsterId }
@@ -73,6 +76,36 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
     case 'recordEvent':
       return finalizeState({ ...state, events: appendEvent(state.events, { type: action.eventType, at }) }, at);
+
+    case 'saveForLater': {
+      const wishlist = [...new Set([...state.wishlist, ...action.itemIds])].slice(0, 50);
+      return finalizeState(
+        { ...state, wishlist, events: appendEvent(state.events, { type: 'purchase_reconsidered', at }) },
+        at,
+      );
+    }
+
+    case 'removeFromWishlist':
+      return { ...state, wishlist: state.wishlist.filter((id) => id !== action.itemId) };
+
+    case 'claimMilestoneRewards': {
+      // Each server-granted milestone id is applied once; repeats are ignored.
+      const fresh = action.rewards.filter((reward) => !state.claimedRewards[reward.id]);
+      if (fresh.length === 0) return state;
+      const claimedRewards = { ...state.claimedRewards };
+      let events = state.events;
+      let xp = 0;
+      for (const reward of fresh) {
+        claimedRewards[reward.id] = at;
+        xp += Math.max(0, Math.floor(reward.xp));
+        events = appendEvent(events, { type: 'milestone_reached', at });
+      }
+      const saverion = state.monsters.saverion;
+      return finalizeState(
+        { ...state, claimedRewards, events, monsters: { ...state.monsters, saverion: { ...saverion, xp: saverion.xp + xp } } },
+        at,
+      );
+    }
 
     case 'startQuest': {
       const quest = QUEST_BY_ID[action.questId];

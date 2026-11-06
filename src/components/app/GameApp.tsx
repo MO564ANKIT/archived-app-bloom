@@ -5,6 +5,7 @@ import { AppHeader } from '@/components/layout/AppHeader';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { AuthScreen } from '@/components/auth/AuthScreen';
 import { PaypalReturn } from '@/components/checkout/PaypalReturn';
+import { MilestoneSync } from '@/components/checkout/MilestoneSync';
 import { Button } from '@/components/kit/Button';
 import { usePageNavigate } from '@/components/app/usePageNavigate';
 import { useAuth } from '@/state/authContext';
@@ -43,6 +44,7 @@ function AppShell({ children }: { children: ReactNode }) {
       </main>
       <BottomNav page={pageFromPath(pathname)} onNavigate={navigate} />
       <PaypalReturn />
+      <MilestoneSync />
     </div>
   );
 }

@@ -61,6 +61,8 @@ export function createEmptyState(now: Date): GameState {
       quests: {},
       achievements: {},
       events: [],
+      wishlist: [],
+      claimedRewards: {},
     },
     now.toISOString(),
   );
@@ -99,6 +101,8 @@ export function createDemoState(now: Date): GameState {
       quests: {},
       achievements: {},
       events,
+      wishlist: [],
+      claimedRewards: {},
     },
     at,
   );
