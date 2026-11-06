@@ -28,3 +28,12 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Project rules (Spendemon)
+
+- Each game screen is its own top-level route; `__root.tsx` wraps every route except `/reset-password` in `GameGate` (sign-in + save loading), so screens can assume a signed-in player. Why: one gate keeps auth and save loading consistent across pages.
+- The whole game state is one JSON row per player in `player_saves`, written with an optimistic `version` check. Why: prevents another tab or device from overwriting newer progress.
+- Payment and AI work run in `src/lib/*.functions.ts` behind `requireSupabaseAuth`; privileged helpers live in `*.server.ts` files that handlers load with dynamic `import()`. Why: keeps secrets and service-role access out of the browser bundle.
+- Loot Shop prices are authoritative only in the server catalogue (`checkout-server/paypal.server.ts`); the display catalogue must match it (enforced by a test). Why: the browser never decides what is charged.
+- Migrated UI primitives live in `src/components/kit/`, separate from shadcn `src/components/ui/`. Why: avoids case-only file-name clashes (Button.tsx vs button.tsx).
+- `tsconfig.json` disables `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes` and `noPropertyAccessFromIndexSignature`. Why: the migrated code was written under plain `strict` mode.
