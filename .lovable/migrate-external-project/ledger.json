@@ -1,0 +1,124 @@
+{
+  "source": "code-archive (paypal1-main.zip, Bolt-built Vite + React app 'Spendemon')",
+  "capabilities": [
+    {
+      "capability": "code",
+      "source": "React 18 + Vite SPA (dashboard, expenses, monsters, quests, money lab, loot shop, roast chat)",
+      "outcome": "migrate",
+      "status": "verified",
+      "next_action": "Ported to TanStack Start routes; build, typecheck and 30 tests pass; signed-in browser run OK"
+    },
+    {
+      "capability": "assets",
+      "source": "public/assets/monsters/*.png (6 images)",
+      "outcome": "migrate",
+      "status": "verified",
+      "next_action": "Six monster images uploaded and loading"
+    },
+    {
+      "capability": "schema",
+      "source": "supabase/migrations: player_saves, roast_requests, shop_orders",
+      "outcome": "migrate",
+      "status": "verified",
+      "next_action": "Tables + RLS recreated in Lovable Cloud"
+    },
+    {
+      "capability": "records",
+      "source": "Supabase project (no export attached)",
+      "outcome": "migrate",
+      "status": "pending",
+      "next_action": "Request CSV/JSON export of player_saves and shop_orders from the old Supabase project"
+    },
+    {
+      "capability": "auth_identities",
+      "source": "Supabase email/password auth (no user export)",
+      "outcome": "migrate",
+      "status": "pending",
+      "next_action": "Request users export (id, email); create accounts, fill legacy_user_map, re-key player_saves/shop_orders"
+    },
+    {
+      "capability": "authorization",
+      "source": "RLS owner-only player_saves; service-only shop_orders/roast_requests",
+      "outcome": "migrate",
+      "status": "verified",
+      "next_action": "Owner-only player_saves policies; shop_orders/roast_requests/legacy_user_map server-only"
+    },
+    {
+      "capability": "first_login_flow",
+      "source": "n/a (new requirement)",
+      "outcome": "migrate",
+      "status": "pending",
+      "next_action": "Built: email confirmation on sign-up + 'Forgot or new password' -> /reset-password. Verify with an imported user after import"
+    },
+    {
+      "capability": "uploaded_file_bytes",
+      "source": "none (no storage buckets used)",
+      "outcome": "not_applicable",
+      "status": "verified",
+      "next_action": "none"
+    },
+    {
+      "capability": "paypal_checkout",
+      "source": "Edge function paypal-checkout (PayPal Orders v2 sandbox)",
+      "outcome": "preserve",
+      "status": "pending",
+      "next_action": "Server function built; needs PAYPAL_CLIENT_ID / PAYPAL_CLIENT_SECRET, then sandbox buyer test"
+    },
+    {
+      "capability": "ai_roast_chat",
+      "source": "Edge function roast-chat (Google Gemini direct API)",
+      "outcome": "preserve",
+      "status": "pending",
+      "next_action": "Server function built (Gemini preserved); needs GEMINI_API_KEY"
+    },
+    {
+      "capability": "public_endpoints_callbacks",
+      "source": "PayPal return/cancel URLs -> /?paypal=return|cancel (browser redirect, no webhooks)",
+      "outcome": "preserve",
+      "status": "verified",
+      "next_action": "PayPal return/cancel still land on /?paypal=return|cancel"
+    },
+    {
+      "capability": "webhooks",
+      "source": "none found",
+      "outcome": "not_applicable",
+      "status": "verified",
+      "next_action": "none"
+    },
+    {
+      "capability": "schedules",
+      "source": "none found",
+      "outcome": "not_applicable",
+      "status": "verified",
+      "next_action": "none"
+    },
+    {
+      "capability": "secrets",
+      "source": "PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, GEMINI_API_KEY",
+      "outcome": "preserve",
+      "status": "pending",
+      "next_action": "Requested via secure form"
+    },
+    {
+      "capability": "tests",
+      "source": "vitest: finance, quests, budgetFacts, verification",
+      "outcome": "migrate",
+      "status": "verified",
+      "next_action": "30 tests pass incl. new server price test"
+    },
+    {
+      "capability": "cutover",
+      "source": "Old Supabase project + Bolt hosting",
+      "outcome": "migrate",
+      "status": "pending",
+      "next_action": "Publish; then retire old Supabase project and Bolt hosting"
+    },
+    {
+      "capability": "verification",
+      "source": "",
+      "outcome": "migrate",
+      "status": "in_progress",
+      "next_action": "Signed-in flow verified with throwaway test account; payment and AI await keys"
+    }
+  ]
+}
