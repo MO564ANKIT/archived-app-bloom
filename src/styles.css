@@ -54,30 +54,30 @@
 }
 
 @theme {
-  --color-night-950: #03060d;
-  --color-night-900: #060b16;
-  --color-night-850: #0a1322;
-  --color-night-800: #0e1a2e;
-  --color-night-700: #15243d;
-  --color-night-600: #1e3354;
-  --color-night-500: #2b4670;
+  --color-night-950: #0b0814;
+  --color-night-900: #0f0b19;
+  --color-night-850: #120e1d;
+  --color-night-800: #1a1427;
+  --color-night-700: #211a30;
+  --color-night-600: #2e2442;
+  --color-night-500: #3f3259;
 
-  --color-ink-50: #f2f8ff;
-  --color-ink-100: #dbe7f5;
-  --color-ink-200: #b3c5dc;
-  --color-ink-300: #8ea4c0;
-  --color-ink-400: #7d93b0;
-  --color-ink-500: #63789a;
+  --color-ink-50: #f5f3fa;
+  --color-ink-100: #e6e1f0;
+  --color-ink-200: #c9c1d8;
+  --color-ink-300: #a49bb5;
+  --color-ink-400: #938aa6;
+  --color-ink-500: #74698a;
 
-  --color-neon-300: #c4f4ff;
-  --color-neon-400: #5ee7ff;
-  --color-neon-500: #22d3ff;
-  --color-neon-600: #0aa9dc;
+  --color-neon-300: #ddffa6;
+  --color-neon-400: #c8ff73;
+  --color-neon-500: #b8ff4d;
+  --color-neon-600: #94d92b;
 
-  --color-volt-300: #a9c8ff;
-  --color-volt-400: #6fa5ff;
-  --color-volt-500: #3d80ff;
-  --color-volt-600: #2360e0;
+  --color-volt-300: #c4b5fd;
+  --color-volt-400: #a78bfa;
+  --color-volt-500: #8b5cf6;
+  --color-volt-600: #7c3aed;
 
   --color-aqua-300: #c5f7ff;
   --color-aqua-400: #8cefff;
@@ -95,8 +95,8 @@
   --font-display: "Rajdhani", system-ui, sans-serif;
   --font-sans: "Inter", system-ui, sans-serif;
 
-  --shadow-glow-neon: 0 0 24px -4px rgba(34, 211, 255, 0.5);
-  --shadow-glow-volt: 0 0 28px -4px rgba(61, 128, 255, 0.55);
+  --shadow-glow-neon: 0 0 24px -4px rgba(184, 255, 77, 0.45);
+  --shadow-glow-volt: 0 0 28px -4px rgba(139, 92, 246, 0.55);
   --shadow-glow-amber: 0 0 24px -4px rgba(245, 184, 46, 0.5);
   --shadow-glow-rose: 0 0 24px -4px rgba(255, 77, 94, 0.5);
   --shadow-card: 0 16px 48px -20px rgba(0, 0, 0, 0.8);
@@ -126,7 +126,7 @@
   @keyframes pulseGlow {
     0%,
     100% {
-      box-shadow: 0 0 0 0 rgba(34, 211, 255, 0.35);
+      box-shadow: 0 0 0 0 rgba(184, 255, 77, 0.3);
     }
     50% {
       box-shadow: 0 0 0 6px rgba(34, 211, 255, 0);
@@ -185,10 +185,10 @@
     min-height: 100vh;
     background-color: var(--color-night-950);
     background-image:
-      radial-gradient(ellipse 70% 45% at 50% -8%, rgba(34, 211, 255, 0.16), transparent 70%),
-      radial-gradient(ellipse 50% 40% at 100% 100%, rgba(245, 184, 46, 0.07), transparent 70%),
-      linear-gradient(rgba(34, 211, 255, 0.045) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(34, 211, 255, 0.045) 1px, transparent 1px);
+      radial-gradient(ellipse 70% 45% at 50% -8%, rgba(139, 92, 246, 0.22), transparent 70%),
+      radial-gradient(ellipse 50% 40% at 100% 100%, rgba(184, 255, 77, 0.06), transparent 70%),
+      linear-gradient(rgba(139, 92, 246, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(139, 92, 246, 0.05) 1px, transparent 1px);
     background-size:
       auto,
       auto,
@@ -209,15 +209,15 @@
   }
 
   ::selection {
-    background: rgba(34, 211, 255, 0.35);
+    background: rgba(184, 255, 77, 0.3);
     color: var(--color-ink-50);
   }
 }
 
 @layer components {
   .card {
-    @apply relative rounded-2xl border border-neon-400/20 bg-night-850/85 shadow-card backdrop-blur-sm;
-    background-image: linear-gradient(160deg, rgba(34, 211, 255, 0.07), transparent 45%);
+    @apply relative rounded-2xl border border-volt-500/25 bg-night-700/80 shadow-card backdrop-blur-sm;
+    background-image: linear-gradient(160deg, rgba(139, 92, 246, 0.1), transparent 45%);
   }
 
   .card::before,
