@@ -6,7 +6,7 @@ type Size = 'sm' | 'md' | 'lg';
 
 const VARIANT_CLASSES: Record<Variant, string> = {
   primary:
-    'bg-neon-500 text-night-950 font-bold shadow-[0_5px_0_0_#0a88b0,0_0_24px_-4px_rgba(34,211,255,0.5)] hover:bg-neon-400 hover:shadow-[0_5px_0_0_#0a88b0,0_0_32px_-4px_rgba(94,231,255,0.85)] active:translate-y-[3px] active:shadow-[0_2px_0_0_#0a88b0]',
+    'bg-neon-500 text-night-950 font-bold shadow-[0_5px_0_0_var(--color-neon-600),0_0_24px_-4px_rgba(184,255,77,0.45)] hover:bg-neon-400 hover:shadow-[0_5px_0_0_var(--color-neon-600),0_0_32px_-4px_rgba(200,255,115,0.7)] active:translate-y-[3px] active:shadow-[0_2px_0_0_var(--color-neon-600)]',
   volt: 'bg-volt-400 text-night-950 font-bold shadow-glow-volt hover:bg-volt-300',
   ghost: 'border border-white/15 bg-white/5 text-ink-50 hover:border-white/30 hover:bg-white/10',
   danger: 'border border-rose-400/40 bg-rose-500/15 text-rose-300 hover:bg-rose-500/25',
