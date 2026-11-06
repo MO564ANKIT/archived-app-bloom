@@ -81,6 +81,9 @@ export function GameProvider({ userId, initialState, initialVersion, children }:
       saveBudgets: (monthlyBudgetPaise, categoryBudgetsPaise) =>
         dispatch({ type: 'saveBudgets', at: now(), monthlyBudgetPaise, categoryBudgetsPaise }),
       recordEvent: (eventType) => dispatch({ type: 'recordEvent', at: now(), eventType }),
+      saveForLater: (itemIds) => dispatch({ type: 'saveForLater', at: now(), itemIds }),
+      removeFromWishlist: (itemId) => dispatch({ type: 'removeFromWishlist', at: now(), itemId }),
+      claimMilestoneRewards: (rewards) => dispatch({ type: 'claimMilestoneRewards', at: now(), rewards }),
       startQuest: (questId) => dispatch({ type: 'startQuest', at: now(), questId }),
       claimQuest: (questId) => dispatch({ type: 'claimQuest', at: now(), questId }),
       setFeatured: (monsterId) => dispatch({ type: 'setFeatured', at: now(), monsterId }),

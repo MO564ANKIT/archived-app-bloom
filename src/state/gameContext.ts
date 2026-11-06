@@ -19,7 +19,10 @@ export interface GameContextValue {
   updateExpense: (id: string, input: ExpenseInput) => void;
   deleteExpense: (id: string) => void;
   saveBudgets: (monthlyBudgetPaise: number | null, categoryBudgetsPaise: Partial<Record<Category, number>>) => void;
-  recordEvent: (eventType: Exclude<EventType, 'expense_logged' | 'quest_completed'>) => void;
+  recordEvent: (eventType: Exclude<EventType, 'expense_logged' | 'quest_completed' | 'milestone_reached'>) => void;
+  saveForLater: (itemIds: string[]) => void;
+  removeFromWishlist: (itemId: string) => void;
+  claimMilestoneRewards: (rewards: { id: string; xp: number }[]) => void;
   startQuest: (questId: string) => void;
   claimQuest: (questId: string) => void;
   setFeatured: (monsterId: MonsterId) => void;
