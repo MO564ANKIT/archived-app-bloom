@@ -119,7 +119,22 @@ export async function runRoast(
 
   const apiKey = process.env["GEMINI_API_KEY"];
   if (!apiKey) {
-    return { ok: false, error: "The AI roaster is not set up yet." };
+    // No project Gemini key: use the same Gemini model through Lovable AI.
+    const request = buildRequest(personality, message.trim(), facts, history);
+    const { generateAiText } = await import("../ai-server/ai.server");
+    const result = await generateAiText({
+      system: request.systemInstruction.parts[0].text,
+      user: request.contents[request.contents.length - 1].parts[0].text,
+      history: history.slice(-MAX_HISTORY).map((item) => ({
+        role: item.role === "user" ? "user" : "assistant",
+        text: item.text.slice(0, MAX_HISTORY_TEXT),
+      })),
+      temperature: 1.0,
+    });
+    if (result.ok) return { ok: true, reply: result.text };
+    if (result.reason === "credits") return { ok: false, error: "The AI roaster is out of credits right now." };
+    if (result.reason === "rate-limit") return { ok: false, error: "Too many roasts at once. Try again in a minute." };
+    return { ok: false, error: "The AI roaster is taking a break. Try again in a moment." };
   }
 
   const response = await fetch(GEMINI_URL, {

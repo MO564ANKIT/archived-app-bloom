@@ -30,7 +30,7 @@ export async function generateAiText(req: AiTextRequest): Promise<AiTextResult> 
             ...(req.history ?? []).map((item) => ({ role: item.role === "user" ? "user" : "model", parts: [{ text: item.text }] })),
             { role: "user", parts: [{ text: req.user }] },
           ],
-          generationConfig: { temperature: req.temperature ?? 0.6, maxOutputTokens: 500 },
+          generationConfig: { temperature: req.temperature ?? 0.6, maxOutputTokens: 2048 },
         }),
       });
       const data = await response.json().catch(() => null);
@@ -53,7 +53,7 @@ export async function generateAiText(req: AiTextRequest): Promise<AiTextResult> 
           { role: "user", content: req.user },
         ],
         temperature: req.temperature ?? 0.6,
-        max_tokens: 500,
+        max_tokens: 2048,
       },
       { signal: AbortSignal.timeout(TIMEOUT_MS) },
     );
