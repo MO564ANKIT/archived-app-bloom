@@ -5,6 +5,7 @@ import { QUESTS } from '@/lib/quests';
 import { ACHIEVEMENTS } from '@/lib/achievements';
 import { createDemoState } from '@/lib/sampleData';
 import type { Category } from '@/lib/categories';
+import type { Json } from '@/integrations/supabase/types';
 import type { Expense, GameEvent, GameState, MonsterId, MonsterProgress, QuestRecord } from '@/types';
 
 const STORAGE_KEY = 'spendemon.state.v1';
@@ -154,14 +155,14 @@ export async function savePlayerState(userId: string, state: GameState, version:
   if (version === 0) {
     const { error } = await supabase
       .from('player_saves')
-      .insert({ user_id: userId, state, updated_at: updatedAt, version: 1 });
+      .insert({ user_id: userId, state: state as unknown as Json, updated_at: updatedAt, version: 1 });
     if (error?.code === '23505') throw new SaveConflictError();
     if (error) throw new Error('Your latest progress could not be saved.');
     return 1;
   }
   const { data, error } = await supabase
     .from('player_saves')
-    .update({ state, updated_at: updatedAt, version: version + 1 })
+    .update({ state: state as unknown as Json, updated_at: updatedAt, version: version + 1 })
     .eq('user_id', userId)
     .eq('version', version)
     .select('version')

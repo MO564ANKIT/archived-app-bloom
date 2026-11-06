@@ -1,13 +1,13 @@
 import { LOOT_BY_ID } from '@/lib/lootCatalogue';
-import { paypalCheckout, type CheckoutInput } from '@/lib/paypal.functions';
+import { paypalCheckout, type CheckoutBody, type CheckoutInput, type CheckoutResponse } from '@/lib/paypal.functions';
 
 export type CaptureResult =
   | { status: 'completed'; orderId: string; itemIds: string[]; amountCents: number }
   | { status: 'failed'; orderId: string; message: string }
   | { status: 'pending'; orderId: string; message: string };
 
-async function postCheckout(body: CheckoutInput): Promise<Record<string, unknown>> {
-  let result;
+async function postCheckout(body: CheckoutInput): Promise<CheckoutBody> {
+  let result: CheckoutResponse;
   try {
     result = await paypalCheckout({ data: body });
   } catch (err) {

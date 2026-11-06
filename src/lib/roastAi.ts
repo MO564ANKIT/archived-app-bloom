@@ -1,4 +1,4 @@
-import { roastChat } from '@/lib/roastChat.functions';
+import { roastChat, type RoastResponse } from '@/lib/roastChat.functions';
 
 export interface RoastHistoryItem {
   role: 'user' | 'bot';
@@ -19,7 +19,7 @@ function friendly(err: unknown): string {
 }
 
 export async function requestRoast(request: RoastRequest): Promise<string> {
-  let result;
+  let result: RoastResponse;
   try {
     result = await roastChat({ data: request });
   } catch (err) {

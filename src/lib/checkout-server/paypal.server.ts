@@ -19,7 +19,16 @@ export const CATALOGUE: Record<string, { priceUsdCents: number }> = {
   "monster-plushie": { priceUsdCents: 899 },
 };
 
-export type CheckoutResult = { ok: true; body: Record<string, unknown> } | { ok: false; error: string };
+export interface CheckoutBody {
+  orderId?: string;
+  approveUrl?: string;
+  status?: string;
+  itemIds?: string[];
+  amountCents?: number;
+  message?: string;
+}
+
+export type CheckoutResult = { ok: true; body: CheckoutBody } | { ok: false; error: string };
 
 interface OrderRow {
   paypal_order_id: string;
@@ -32,7 +41,7 @@ interface OrderRow {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Db = SupabaseClient<any, any, any>;
 
-const ok = (body: Record<string, unknown>): CheckoutResult => ({ ok: true, body });
+const ok = (body: CheckoutBody): CheckoutResult => ({ ok: true, body });
 const fail = (error: string): CheckoutResult => ({ ok: false, error });
 
 async function getAccessToken(): Promise<string> {

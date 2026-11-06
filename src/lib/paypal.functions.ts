@@ -8,7 +8,16 @@ export interface CheckoutInput {
   orderId?: string;
 }
 
-export type CheckoutResponse = { ok: true; body: Record<string, unknown> } | { ok: false; error: string };
+export interface CheckoutBody {
+  orderId?: string;
+  approveUrl?: string;
+  status?: string;
+  itemIds?: string[];
+  amountCents?: number;
+  message?: string;
+}
+
+export type CheckoutResponse = { ok: true; body: CheckoutBody } | { ok: false; error: string };
 
 function resolveOrigin(): string | null {
   const origin = getRequestHeader("origin");
