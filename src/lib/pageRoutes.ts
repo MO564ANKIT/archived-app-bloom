@@ -3,10 +3,12 @@ import type { PageId } from '@/components/layout/BottomNav';
 export const PAGE_PATHS = {
   dashboard: '/',
   expenses: '/expenses',
+  goals: '/goals',
   monsters: '/monsters',
   quests: '/quests',
   lab: '/money-lab',
   shop: '/loot-shop',
+  vault: '/vault',
   roast: '/roast',
 } as const satisfies Record<PageId, string>;
 

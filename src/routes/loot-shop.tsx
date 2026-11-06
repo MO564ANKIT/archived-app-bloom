@@ -4,10 +4,10 @@ import { LootShopPage } from "@/screens/LootShopPage";
 export const Route = createFileRoute("/loot-shop")({
   head: () => ({
     meta: [
-      { title: "Loot Shop | Spendemon" },
-      { name: "description", content: "Browse playful loot and check out with PayPal sandbox." },
-      { property: "og:title", content: "Loot Shop | Spendemon" },
-      { property: "og:description", content: "Browse playful loot and check out with PayPal sandbox." },
+      { title: "Monster Marketplace | Spendemon" },
+      { name: "description", content: "Collect monster skins, accessories and effects with a Purchase Guardian check and PayPal Sandbox checkout." },
+      { property: "og:title", content: "Monster Marketplace | Spendemon" },
+      { property: "og:description", content: "Collect monster skins, accessories and effects with a Purchase Guardian check and PayPal Sandbox checkout." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
