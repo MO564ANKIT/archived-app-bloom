@@ -14,6 +14,9 @@ function friendlyAuthError(message: string): string {
   if (lower.includes('invalid login credentials')) {
     return 'Email or password is incorrect. Played Spendemon before the move? Use "Forgot or new password" to set one.';
   }
+  if (lower.includes('email address') && (lower.includes('not allowed') || lower.includes('invalid'))) {
+    return 'Use a real email address you can open. We send a link to confirm it.';
+  }
   if (lower.includes('rate limit') || lower.includes('too many')) {
     return 'Too many attempts. Please wait a minute and try again.';
   }
