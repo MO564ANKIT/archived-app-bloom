@@ -103,7 +103,16 @@ export async function processWebhookEvent(db: Db, event: WebhookEvent): Promise<
     )
     .select("event_id");
   if (insertError) throw insertError;
-  if (!inserted || inserted.length === 0) return "duplicate";
+  if (!inserted || inserted.length === 0) {
+    // Seen before: skip if it finished; reprocess if an earlier attempt failed midway (crediting is idempotent).
+    const { data: seen, error: seenError } = await db
+      .from("paypal_webhook_events")
+      .select("processed_at")
+      .eq("event_id", event.id)
+      .maybeSingle();
+    if (seenError) throw seenError;
+    if (seen?.processed_at) return "duplicate";
+  }
 
   const action = interpretWebhookEvent(event);
   let outcome = "ignored";
