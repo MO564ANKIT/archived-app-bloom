@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
   Link,
+  useLocation,
   createRootRouteWithContext,
   useRouter,
   HeadContent,
@@ -12,6 +13,8 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { AuthProvider } from "@/state/AuthProvider";
+import { GameGate } from "@/components/app/GameApp";
 
 function NotFoundComponent() {
   return (
@@ -78,21 +81,31 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Spendemon - Your Wallet Is Cooked. Your Monsters Are Thriving." },
+      {
+        name: "description",
+        content:
+          "Track spending, collect spending-habit monsters, complete money quests, and get roasted by an AI that means well.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
         rel: "stylesheet",
         href: appCss,
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      {
+        rel: "icon",
+        type: "image/svg+xml",
+        href: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%2303060d'/%3E%3Cpath d='M16 5 L26 16 L16 27 L6 16 Z' fill='none' stroke='%2322d3ff' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%23ffd45c'/%3E%3C/svg%3E",
+      },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Rajdhani:wght@600;700&display=swap",
+      },
     ],
   }),
   shellComponent: RootShell,
@@ -115,13 +128,25 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+// Pages that must work without the signed-in game shell (e.g. password recovery links).
+const UNGATED_PATHS = new Set(["/reset-password"]);
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const pathname = useLocation({ select: (location) => location.pathname });
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <AuthProvider>
+        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+        {UNGATED_PATHS.has(pathname) ? (
+          <Outlet />
+        ) : (
+          <GameGate>
+            <Outlet />
+          </GameGate>
+        )}
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

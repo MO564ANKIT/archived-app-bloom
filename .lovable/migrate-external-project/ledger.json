@@ -1,0 +1,22 @@
+{
+  "source": "code-archive (paypal1-main.zip, Bolt-built Vite + React app 'Spendemon')",
+  "capabilities": [
+    {"capability": "code", "source": "React 18 + Vite SPA (dashboard, expenses, monsters, quests, money lab, loot shop, roast chat)", "outcome": "migrate", "status": "in_progress", "next_action": "Port to TanStack Start routes"},
+    {"capability": "assets", "source": "public/assets/monsters/*.png (6 images)", "outcome": "migrate", "status": "in_progress", "next_action": "Upload via lovable-assets"},
+    {"capability": "schema", "source": "supabase/migrations: player_saves, roast_requests, shop_orders", "outcome": "migrate", "status": "in_progress", "next_action": "Recreate in Lovable Cloud"},
+    {"capability": "records", "source": "Supabase project (no export attached)", "outcome": "migrate", "status": "pending", "next_action": "Request CSV/JSON export of player_saves and shop_orders"},
+    {"capability": "auth_identities", "source": "Supabase email/password auth (no user export)", "outcome": "migrate", "status": "pending", "next_action": "Request users export (id, email); import and map IDs"},
+    {"capability": "authorization", "source": "RLS owner-only player_saves; service-only shop_orders/roast_requests", "outcome": "migrate", "status": "in_progress", "next_action": "Recreate RLS + grants"},
+    {"capability": "first_login_flow", "source": "n/a (new requirement)", "outcome": "migrate", "status": "in_progress", "next_action": "Forgot-password / set-new-password flow for imported users"},
+    {"capability": "uploaded_file_bytes", "source": "none (no storage buckets used)", "outcome": "not_applicable", "status": "verified", "next_action": "none"},
+    {"capability": "paypal_checkout", "source": "Edge function paypal-checkout (PayPal Orders v2 sandbox)", "outcome": "preserve", "status": "in_progress", "next_action": "Port to server functions; needs PAYPAL_CLIENT_ID / PAYPAL_CLIENT_SECRET"},
+    {"capability": "ai_roast_chat", "source": "Edge function roast-chat (Google Gemini direct API)", "outcome": "preserve", "status": "in_progress", "next_action": "Port to server function; needs GEMINI_API_KEY"},
+    {"capability": "public_endpoints_callbacks", "source": "PayPal return/cancel URLs -> /?paypal=return|cancel (browser redirect, no webhooks)", "outcome": "preserve", "status": "in_progress", "next_action": "Keep same query params on /"},
+    {"capability": "webhooks", "source": "none found", "outcome": "not_applicable", "status": "verified", "next_action": "none"},
+    {"capability": "schedules", "source": "none found", "outcome": "not_applicable", "status": "verified", "next_action": "none"},
+    {"capability": "secrets", "source": "PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, GEMINI_API_KEY", "outcome": "preserve", "status": "pending", "next_action": "Request via secure secret form"},
+    {"capability": "tests", "source": "vitest: finance, quests, budgetFacts, verification", "outcome": "migrate", "status": "in_progress", "next_action": "Port and run"},
+    {"capability": "cutover", "source": "Old Supabase project + Bolt hosting", "outcome": "migrate", "status": "pending", "next_action": "Publish; PayPal return URLs follow request origin automatically"},
+    {"capability": "verification", "source": "", "outcome": "migrate", "status": "pending", "next_action": "Build, tests, browser run"}
+  ]
+}
