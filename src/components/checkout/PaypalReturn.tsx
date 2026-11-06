@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { CheckCircle2, Loader2, RotateCw, Undo2, XCircle } from 'lucide-react';
+import { CheckCircle2, Loader2, RotateCw, Trophy, Undo2, XCircle } from 'lucide-react';
 import { Button } from '@/components/kit/Button';
 import { Modal } from '@/components/kit/Modal';
-import { LOOT_BY_ID } from '@/lib/lootCatalogue';
+import { SandboxBadge } from '@/components/checkout/SandboxBadge';
+import { LOOT_BY_ID, MILESTONE_REWARDS } from '@/lib/lootCatalogue';
 import { formatUsdCents } from '@/lib/money';
+import { useRefreshLedger } from '@/lib/ledger';
 import { cancelPaypalOrder, capturePaypalOrder, type CaptureResult } from '@/lib/paypalCheckout';
 import { useGame } from '@/state/gameContext';
 
@@ -27,6 +29,7 @@ function readPaypalReturn(): PaypalReturnRequest | null {
 
 export function PaypalReturn() {
   const { recordEvent } = useGame();
+  const refreshLedger = useRefreshLedger();
   const [request] = useState(readPaypalReturn);
   const [outcome, setOutcome] = useState<Outcome | null>(() => (request ? { phase: 'capturing' } : null));
   const startedRef = useRef(false);
@@ -37,7 +40,8 @@ export function PaypalReturn() {
       capturePaypalOrder(orderId)
         .then((result) => {
           if (result.status === 'completed') {
-            recordEvent('purchase_completed');
+            // The server verified and credited this order; the event only feeds quest progress.
+            recordEvent(result.kind === 'goal_contribution' ? 'goal_contribution' : 'purchase_completed');
             setOutcome({ phase: 'completed', result });
           } else if (result.status === 'pending') {
             setOutcome({ phase: 'pending', orderId, message: result.message });
@@ -51,9 +55,12 @@ export function PaypalReturn() {
             orderId,
             message: error instanceof Error ? error.message : 'Payment could not be confirmed. Please try again.',
           });
+        })
+        .finally(() => {
+          void refreshLedger();
         });
     },
-    [recordEvent],
+    [recordEvent, refreshLedger],
   );
 
   useEffect(() => {
@@ -62,12 +69,14 @@ export function PaypalReturn() {
     window.history.replaceState(null, '', window.location.pathname);
 
     if (request.kind === 'cancel') {
-      cancelPaypalOrder(request.orderId).catch(() => undefined);
+      cancelPaypalOrder(request.orderId)
+        .catch(() => undefined)
+        .finally(() => void refreshLedger());
       setOutcome({ phase: 'cancelled' });
       return;
     }
     confirm(request.orderId);
-  }, [request, confirm]);
+  }, [request, confirm, refreshLedger]);
 
   if (!outcome) return null;
 
@@ -77,29 +86,49 @@ export function PaypalReturn() {
 
   return (
     <Modal open onClose={close} title={modalTitle(outcome.phase)}>
+      <div className="mb-4 flex justify-center">
+        <SandboxBadge />
+      </div>
       {outcome.phase === 'capturing' && (
         <div className="flex flex-col items-center gap-4 py-6 text-center">
           <Loader2 className="h-10 w-10 animate-spin text-aqua-300" />
-          <p className="text-sm text-ink-200">Confirming your payment with PayPal...</p>
+          <p className="text-sm text-ink-200">Verifying the capture with PayPal on our server...</p>
         </div>
       )}
 
       {outcome.phase === 'completed' && (
         <div className="space-y-5">
           <div className="flex flex-col items-center gap-3 text-center">
-            <CheckCircle2 className="h-12 w-12 text-neon-300" />
+            <CheckCircle2 className="h-12 w-12 text-neon-400" />
             <p className="text-sm text-ink-200">
-              Payment of {formatUsdCents(outcome.result.amountCents)} was confirmed by PayPal. Your purchase is now recorded in the app.
+              PayPal confirmed a {formatUsdCents(outcome.result.amountCents)} sandbox payment and our server verified the amount, currency and owner.
+              {outcome.result.kind === 'goal_contribution'
+                ? ' Your simulated contribution now counts toward your goal.'
+                : ' Your items are unlocked in your inventory.'}
             </p>
           </div>
-          <ul className="divide-y divide-white/10 rounded-2xl border border-white/10 bg-night-950/50 px-4 text-sm">
-            {outcome.result.itemIds.map((id) => (
-              <li key={id} className="flex items-center justify-between py-3 text-ink-100">
-                <span>{LOOT_BY_ID[id]?.name ?? id}</span>
-                <span className="font-semibold text-ink-50">{LOOT_BY_ID[id] ? formatUsdCents(LOOT_BY_ID[id].priceUsdCents) : ''}</span>
-              </li>
-            ))}
-          </ul>
+          {outcome.result.kind === 'shop' && (
+            <ul className="divide-y divide-white/10 rounded-2xl border border-white/10 bg-night-950/50 px-4 text-sm">
+              {outcome.result.itemIds.map((id) => (
+                <li key={id} className="flex items-center justify-between py-3 text-ink-100">
+                  <span>{LOOT_BY_ID[id]?.name ?? id}</span>
+                  <span className="font-semibold text-ink-50">{LOOT_BY_ID[id] ? formatUsdCents(LOOT_BY_ID[id].priceUsdCents) : ''}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+          {outcome.result.milestones.length > 0 && (
+            <ul className="space-y-2">
+              {outcome.result.milestones.map((milestone) => (
+                <li key={milestone} className="flex items-center gap-3 rounded-2xl border border-amber-400/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+                  <Trophy className="h-5 w-5 shrink-0" />
+                  <span>
+                    {milestone}% milestone reached: {MILESTONE_REWARDS[milestone]?.label}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
           <p className="text-xs text-ink-400">PayPal order reference: {outcome.result.orderId}</p>
         </div>
       )}
@@ -127,7 +156,7 @@ export function PaypalReturn() {
       {outcome.phase === 'cancelled' && (
         <div className="flex flex-col items-center gap-4 text-center">
           <Undo2 className="h-12 w-12 text-amber-300" />
-          <p className="text-sm text-ink-200">You cancelled the PayPal checkout. Nothing was charged. You can try again from the Loot Shop.</p>
+          <p className="text-sm text-ink-200">You cancelled the PayPal checkout. Nothing was charged and nothing was unlocked.</p>
         </div>
       )}
     </Modal>
@@ -139,7 +168,7 @@ function modalTitle(phase: Outcome['phase']): string {
     case 'capturing':
       return 'Checking your payment';
     case 'completed':
-      return 'Payment confirmed';
+      return 'Payment verified';
     case 'failed':
       return 'Payment not completed';
     case 'pending':
