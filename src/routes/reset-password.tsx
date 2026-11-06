@@ -71,7 +71,9 @@ function ResetPasswordPage() {
         <section className="card space-y-6 p-6 sm:p-8">
           <div className="space-y-2">
             <h1 className="text-xl font-bold text-ink-50">Choose a new password</h1>
-            <p className="text-sm text-ink-300">Your email is confirmed. Pick a password to finish signing in.</p>
+            <p className="text-sm text-ink-300">
+              {ready ? "Your email is confirmed. Pick a password to finish signing in." : "Open the link from your email to continue."}
+            </p>
           </div>
 
           {linkError || (!loading && !session) ? (
