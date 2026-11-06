@@ -39,7 +39,7 @@ export function Celebration({ open, title, message, reward, onClose }: Celebrati
                 key={angle}
                 aria-hidden="true"
                 className="absolute left-1/2 top-1/2 h-3 w-3 rounded-sm"
-                style={{ background: index % 2 === 0 ? '#ffd45c' : '#22d3ff' }}
+                style={{ background: index % 2 === 0 ? 'var(--color-amber-400)' : 'var(--color-neon-500)' }}
                 initial={{ x: 0, y: 0, opacity: 1, scale: 0.5 }}
                 animate={{
                   x: Math.cos((angle * Math.PI) / 180) * 150,
