@@ -25,3 +25,24 @@ describe('countQuestProgress', () => {
     expect(countQuestProgress(categoryQuest, events, TODAY)).toBe(1);
   });
 });
+
+describe('savings quests', () => {
+  const saver = QUESTS.find((quest) => quest.id === 'paypal-saver');
+  const hunter = QUESTS.find((quest) => quest.id === 'milestone-hunter');
+  if (!saver || !hunter) throw new Error('savings quests are missing');
+
+  it('counts only verified goal contributions from this week', () => {
+    const events: GameEvent[] = [
+      { type: 'goal_contribution', at: `${TODAY}T08:00:00.000Z` },
+      { type: 'goal_contribution', at: '2025-06-01T08:00:00.000Z' },
+      { type: 'purchase_completed', at: `${TODAY}T09:00:00.000Z` },
+    ];
+    expect(countQuestProgress(saver, events, TODAY)).toBe(1);
+  });
+
+  it('milestone hunter is a hard weekly quest needing one milestone', () => {
+    expect(hunter.period).toBe('weekly');
+    expect(hunter.difficulty).toBe('hard');
+    expect(hunter.goal).toEqual({ event: 'milestone_reached', count: 1 });
+  });
+});
