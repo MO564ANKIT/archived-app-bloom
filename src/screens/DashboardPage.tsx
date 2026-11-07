@@ -6,6 +6,8 @@ import { BudgetSummary } from '@/components/budget/BudgetSummary';
 import { budgetTone } from '@/components/budget/budgetTone';
 import { QuickActions } from '@/components/dashboard/QuickActions';
 import { RecentExpenses } from '@/components/dashboard/RecentExpenses';
+import { InsightsCard } from '@/components/dashboard/InsightsCard';
+import { SavingsOverview } from '@/components/dashboard/SavingsOverview';
 import { StreakWeek } from '@/components/dashboard/StreakWeek';
 import { MonsterStage } from '@/components/monsters/MonsterStage';
 import { Button } from '@/components/kit/Button';
@@ -91,6 +93,8 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
           <QuickActions onNavigate={onNavigate} />
         </section>
       </StaggerItem>
+
+      <SavingsOverview onNavigate={onNavigate} />
 
       <div className="grid gap-6 lg:grid-cols-12">
         <StaggerItem index={1} className="lg:col-span-4">
@@ -218,6 +222,8 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
       </div>
 
       <RecentExpenses expenses={state.expenses} today={today} onViewAll={() => onNavigate('expenses')} />
+
+      <InsightsCard />
 
       <div className="grid gap-6 lg:grid-cols-12">
         <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 p-6 text-night-950 shadow-glow-amber sm:p-8 lg:col-span-7">
