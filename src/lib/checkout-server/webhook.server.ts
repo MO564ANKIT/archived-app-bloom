@@ -2,6 +2,7 @@
 // deduplication, and reconciliation through the same atomic credit function.
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { PAYPAL_API, creditVerifiedOrder, getAccessToken } from "./paypal.server";
+import { captureIdFromLinks, expectedCustomId } from "./verification";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Db = SupabaseClient<any, any, any>;
@@ -20,13 +21,22 @@ export interface WebhookEvent {
   resource?: {
     id?: string;
     status?: string;
+    custom_id?: string;
+    links?: { rel?: string; href?: string }[];
     amount?: { value?: string; currency_code?: string };
     supplementary_data?: { related_ids?: { order_id?: string } };
   };
 }
 
 export type WebhookAction =
-  | { kind: "complete"; orderId: string; captureId: string; amountCents: number | null; currency: string | null }
+  | {
+      kind: "complete";
+      orderId: string;
+      captureId: string;
+      amountCents: number | null;
+      currency: string | null;
+      customId: string | null;
+    }
   | { kind: "fail"; orderId: string; reason: string }
   | { kind: "refund"; captureId: string }
   | { kind: "ignore" };
@@ -39,7 +49,8 @@ function valueToCents(value: unknown): number | null {
 export function parseWebhookEvent(value: unknown): WebhookEvent | null {
   if (typeof value !== "object" || value === null) return null;
   const event = value as WebhookEvent;
-  if (typeof event.id !== "string" || event.id.length > 100 || typeof event.event_type !== "string") return null;
+  if (typeof event.id !== "string" || event.id.length > 100 || typeof event.event_type !== "string")
+    return null;
   return event;
 }
 
@@ -54,16 +65,20 @@ export function interpretWebhookEvent(event: WebhookEvent): WebhookAction {
         orderId,
         captureId: resource.id,
         amountCents: valueToCents(resource.amount?.value),
-        currency: typeof resource.amount?.currency_code === "string" ? resource.amount.currency_code : null,
+        currency:
+          typeof resource.amount?.currency_code === "string" ? resource.amount.currency_code : null,
+        customId: typeof resource.custom_id === "string" ? resource.custom_id : null,
       };
     case "PAYMENT.CAPTURE.DENIED":
     case "PAYMENT.CAPTURE.DECLINED":
       if (typeof orderId !== "string") return { kind: "ignore" };
       return { kind: "fail", orderId, reason: `PayPal reported ${event.event_type}` };
     case "PAYMENT.CAPTURE.REFUNDED":
-    case "PAYMENT.CAPTURE.REVERSED":
-      // The refunded resource links back to the capture via its "up" link; we match on capture id when present.
-      return typeof resource.id === "string" ? { kind: "refund", captureId: resource.id } : { kind: "ignore" };
+    case "PAYMENT.CAPTURE.REVERSED": {
+      // The resource is the refund, whose id is not the capture id; the capture is its "up" link.
+      const captureId = captureIdFromLinks(resource.links);
+      return captureId ? { kind: "refund", captureId } : { kind: "ignore" };
+    }
     default:
       return { kind: "ignore" };
   }
@@ -120,12 +135,15 @@ export async function processWebhookEvent(db: Db, event: WebhookEvent): Promise<
   if (action.kind === "complete") {
     const { data: order, error } = await db
       .from("shop_orders")
-      .select("paypal_order_id, amount_cents, currency, status")
+      .select("paypal_order_id, user_id, kind, goal_id, amount_cents, currency, status")
       .eq("paypal_order_id", action.orderId)
       .maybeSingle();
     if (error) throw error;
     if (!order) outcome = "unknown-order";
-    else if (order.amount_cents !== action.amountCents || order.currency !== action.currency) outcome = "amount-mismatch";
+    else if (order.amount_cents !== action.amountCents || order.currency !== action.currency)
+      outcome = "amount-mismatch";
+    else if (action.customId !== null && action.customId !== expectedCustomId(order))
+      outcome = "purpose-mismatch";
     else {
       await creditVerifiedOrder(db, action.orderId, action.captureId);
       outcome = "credited";
@@ -133,7 +151,11 @@ export async function processWebhookEvent(db: Db, event: WebhookEvent): Promise<
   } else if (action.kind === "fail") {
     const { error } = await db
       .from("shop_orders")
-      .update({ status: "failed", failure_reason: action.reason, updated_at: new Date().toISOString() })
+      .update({
+        status: "failed",
+        failure_reason: action.reason,
+        updated_at: new Date().toISOString(),
+      })
       .eq("paypal_order_id", action.orderId)
       .in("status", ["created", "capturing", "pending"]);
     if (error) throw error;
@@ -141,7 +163,11 @@ export async function processWebhookEvent(db: Db, event: WebhookEvent): Promise<
   } else if (action.kind === "refund") {
     const { error } = await db
       .from("shop_orders")
-      .update({ status: "refunded", failure_reason: "Refunded at PayPal", updated_at: new Date().toISOString() })
+      .update({
+        status: "refunded",
+        failure_reason: "Refunded at PayPal",
+        updated_at: new Date().toISOString(),
+      })
       .eq("paypal_capture_id", action.captureId)
       .eq("status", "completed");
     if (error) throw error;
