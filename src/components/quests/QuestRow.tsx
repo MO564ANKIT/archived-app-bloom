@@ -12,6 +12,16 @@ const EVENT_UNITS: Record<Exclude<EventType, 'quest_completed'>, string> = {
   purchase_skipped: 'purchases skipped',
   cart_abandoned: 'carts abandoned',
   purchase_completed: 'checkouts completed',
+  goal_contribution: 'verified contributions',
+  milestone_reached: 'milestones reached',
+  purchase_reconsidered: 'items saved for later',
+  spending_reviewed: 'spending reviews',
+};
+
+const DIFFICULTY_CLASS: Record<QuestDefinition['difficulty'], string> = {
+  easy: 'bg-neon-500/15 text-neon-300',
+  medium: 'bg-aqua-500/15 text-aqua-300',
+  hard: 'bg-rose-500/15 text-rose-300',
 };
 
 type QuestStatus = 'available' | 'active' | 'ready' | 'completed';
@@ -44,6 +54,9 @@ export function QuestRow({ quest, progress, record, onStart, onClaim }: QuestRow
           <div className="flex flex-wrap items-center gap-2">
             <span className="rounded-full bg-volt-400/15 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-volt-200">
               {quest.period}
+            </span>
+            <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider ${DIFFICULTY_CLASS[quest.difficulty]}`}>
+              {quest.difficulty}
             </span>
             {status === 'completed' && (
               <span className="flex items-center gap-1 text-xs font-bold text-neon-300">
