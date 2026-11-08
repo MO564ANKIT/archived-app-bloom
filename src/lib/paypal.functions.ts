@@ -24,7 +24,9 @@ export interface CheckoutBody {
   message?: string;
 }
 
-export type CheckoutResponse = { ok: true; body: CheckoutBody } | { ok: false; error: string };
+export type CheckoutResponse =
+  | { ok: true; body: CheckoutBody }
+  | { ok: false; error: string; code?: "setup_needed" };
 
 const ACTIONS: CheckoutAction[] = ["create", "contribute", "capture", "cancel"];
 
@@ -57,7 +59,13 @@ export const paypalCheckout = createServerFn({ method: "POST" })
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
       const checkout = await import("./checkout-server/paypal.server");
       if (!checkout.paypalConfigured()) {
-        return { ok: false, error: "PayPal Sandbox is not set up yet, so checkout is unavailable." };
+        const { paypalSetupStatus, logMissingPaypalSecrets } = await import("./checkout-server/setupStatus");
+        logMissingPaypalSecrets(`checkout ${data.action}`, paypalSetupStatus(process.env));
+        return {
+          ok: false,
+          code: "setup_needed",
+          error: "Sandbox setup needed: PayPal test keys are not configured yet, so checkout is paused. No money was charged.",
+        };
       }
       const { userId } = context;
       switch (data.action) {

@@ -4,6 +4,7 @@
 // currency, owner and purpose, and then credited once by the credit_paypal_order SQL function.
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { centsToValue, verifyPayment, type PaypalOrderBody } from "./verification";
+import { paypalSetupStatus } from "./setupStatus";
 
 export const PAYPAL_API = "https://api-m.sandbox.paypal.com";
 const ORDER_ID_PATTERN = /^[A-Z0-9]{10,30}$/;
@@ -63,7 +64,7 @@ const ok = (body: CheckoutBody): CheckoutResult => ({ ok: true, body });
 const fail = (error: string): CheckoutResult => ({ ok: false, error });
 
 export function paypalConfigured(): boolean {
-  return Boolean(process.env["PAYPAL_CLIENT_ID"] && process.env["PAYPAL_CLIENT_SECRET"]);
+  return paypalSetupStatus(process.env).checkoutReady;
 }
 
 export async function getAccessToken(): Promise<string> {
@@ -99,6 +100,7 @@ async function checkRateLimit(db: Db, userId: string): Promise<string | null> {
     .from("shop_orders")
     .select("paypal_order_id", { count: "exact", head: true })
     .eq("user_id", userId)
+    .eq("is_demo", false)
     .gte("created_at", windowStart);
   if (error) throw error;
   return (count ?? 0) >= MAX_ORDERS_PER_HOUR
@@ -281,6 +283,13 @@ function completedBody(order: OrderRow, milestones: number[] = []): CheckoutBody
   };
 }
 
+// Milestones granted by this order, e.g. when the webhook credited it before the return page asked.
+async function milestonesForOrder(db: Db, orderId: string): Promise<number[]> {
+  const { data, error } = await db.from("goal_rewards").select("milestone").eq("order_id", orderId);
+  if (error) throw error;
+  return (data ?? []).map((row: { milestone: number }) => row.milestone).sort((a: number, b: number) => a - b);
+}
+
 const PENDING_MESSAGE = "PayPal is still confirming this payment. Nothing is unlocked until it clears.";
 
 export async function captureOrder(db: Db, userId: string, orderId: unknown): Promise<CheckoutResult> {
@@ -309,7 +318,10 @@ export async function captureOrder(db: Db, userId: string, orderId: unknown): Pr
     if (lookupError) throw lookupError;
     if (!existing) return fail("We could not find this order.");
     const row = existing as OrderRow;
-    if (row.status === "completed") return ok(completedBody(row));
+    if (row.status === "completed") {
+      const milestones = row.kind === "goal_contribution" ? await milestonesForOrder(db, orderId) : [];
+      return ok(completedBody(row, milestones));
+    }
     if (row.status === "capturing") return ok({ status: "pending", orderId, kind: row.kind, message: PENDING_MESSAGE });
     return ok({ status: row.status, orderId, kind: row.kind, message: "This order can no longer be paid." });
   }
