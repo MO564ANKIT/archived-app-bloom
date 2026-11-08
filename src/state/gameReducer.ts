@@ -2,11 +2,18 @@ import { applyExpenseXp } from '@/lib/monsters';
 import { dateKeyOf } from '@/lib/dates';
 import { finalizeState } from '@/lib/progress';
 import { QUEST_BY_ID, countQuestProgress, questRecordKey } from '@/lib/quests';
-import { createDemoState, createEmptyState } from '@/lib/sampleData';
+import { SAMPLE_CATEGORY_BUDGETS, SAMPLE_MONTHLY_BUDGET_PAISE, createDemoState, createEmptyState } from '@/lib/sampleData';
 import type { Category } from '@/lib/categories';
 import type { EventType, Expense, GameEvent, GameState, MonsterId } from '@/types';
 
 const MAX_EVENTS = 1000;
+
+/** One server record (milestone reward or verified contribution) whose XP is applied once. */
+export interface RewardClaim {
+  id: string;
+  xp: number;
+  kind: 'milestone' | 'contribution';
+}
 
 export type GameAction = { at: string } & (
   | { type: 'addExpense'; expense: Expense }
@@ -20,11 +27,12 @@ export type GameAction = { at: string } & (
   | { type: 'recordEvent'; eventType: Exclude<EventType, 'expense_logged' | 'quest_completed' | 'milestone_reached'> }
   | { type: 'saveForLater'; itemIds: string[] }
   | { type: 'removeFromWishlist'; itemId: string }
-  | { type: 'claimMilestoneRewards'; rewards: { id: string; xp: number }[] }
+  | { type: 'claimRewards'; rewards: RewardClaim[] }
   | { type: 'startQuest'; questId: string }
   | { type: 'claimQuest'; questId: string }
   | { type: 'setFeatured'; monsterId: MonsterId }
   | { type: 'resetDemo' }
+  | { type: 'clearSampleData' }
   | { type: 'clearAll' }
 );
 
@@ -88,8 +96,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     case 'removeFromWishlist':
       return { ...state, wishlist: state.wishlist.filter((id) => id !== action.itemId) };
 
-    case 'claimMilestoneRewards': {
-      // Each server-granted milestone id is applied once; repeats are ignored.
+    case 'claimRewards': {
+      // Each server record id is applied once; repeats are ignored.
       const fresh = action.rewards.filter((reward) => !state.claimedRewards[reward.id]);
       if (fresh.length === 0) return state;
       const claimedRewards = { ...state.claimedRewards };
@@ -98,7 +106,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       for (const reward of fresh) {
         claimedRewards[reward.id] = at;
         xp += Math.max(0, Math.floor(reward.xp));
-        events = appendEvent(events, { type: 'milestone_reached', at });
+        events = appendEvent(events, { type: reward.kind === 'milestone' ? 'milestone_reached' : 'goal_contribution', at });
       }
       const saverion = state.monsters.saverion;
       return finalizeState(
@@ -145,10 +153,26 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     case 'setFeatured':
       return { ...state, featuredMonsterId: action.monsterId };
 
+    // Resets keep claimedRewards so server-granted XP can never be applied twice.
     case 'resetDemo':
-      return finalizeState(createDemoState(new Date(at)), at);
+      return finalizeState({ ...createDemoState(new Date(at)), claimedRewards: state.claimedRewards }, at);
+
+    case 'clearSampleData': {
+      const sampleBudget =
+        state.monthlyBudgetPaise === SAMPLE_MONTHLY_BUDGET_PAISE &&
+        JSON.stringify(state.categoryBudgetsPaise) === JSON.stringify(SAMPLE_CATEGORY_BUDGETS);
+      return finalizeState(
+        {
+          ...state,
+          expenses: state.expenses.filter((expense) => !expense.isSample),
+          monthlyBudgetPaise: sampleBudget ? null : state.monthlyBudgetPaise,
+          categoryBudgetsPaise: sampleBudget ? {} : state.categoryBudgetsPaise,
+        },
+        at,
+      );
+    }
 
     case 'clearAll':
-      return finalizeState(createEmptyState(new Date(at)), at);
+      return finalizeState({ ...createEmptyState(new Date(at)), claimedRewards: state.claimedRewards }, at);
   }
 }

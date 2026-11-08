@@ -1,6 +1,7 @@
 import { createContext, useContext } from 'react';
 import type { Category } from '@/lib/categories';
 import type { EventType, GameState, MonsterId } from '@/types';
+import type { RewardClaim } from '@/state/gameReducer';
 
 export interface ExpenseInput {
   amountPaise: number;
@@ -22,11 +23,12 @@ export interface GameContextValue {
   recordEvent: (eventType: Exclude<EventType, 'expense_logged' | 'quest_completed' | 'milestone_reached'>) => void;
   saveForLater: (itemIds: string[]) => void;
   removeFromWishlist: (itemId: string) => void;
-  claimMilestoneRewards: (rewards: { id: string; xp: number }[]) => void;
+  claimRewards: (rewards: RewardClaim[]) => void;
   startQuest: (questId: string) => void;
   claimQuest: (questId: string) => void;
   setFeatured: (monsterId: MonsterId) => void;
   resetDemo: () => void;
+  clearSampleData: () => void;
   clearAll: () => void;
 }
 

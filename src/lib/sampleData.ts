@@ -4,9 +4,9 @@ import { finalizeState } from '@/lib/progress';
 import type { Category } from '@/lib/categories';
 import type { Expense, GameState, MonsterId, MonsterProgress } from '@/types';
 
-const SAMPLE_MONTHLY_BUDGET_PAISE = 2_500_000;
+export const SAMPLE_MONTHLY_BUDGET_PAISE = 2_500_000;
 
-const SAMPLE_CATEGORY_BUDGETS: Partial<Record<Category, number>> = {
+export const SAMPLE_CATEGORY_BUDGETS: Partial<Record<Category, number>> = {
   food: 400_000,
   coffee: 150_000,
   shopping: 300_000,

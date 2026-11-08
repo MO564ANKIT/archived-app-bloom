@@ -83,11 +83,12 @@ export function GameProvider({ userId, initialState, initialVersion, children }:
       recordEvent: (eventType) => dispatch({ type: 'recordEvent', at: now(), eventType }),
       saveForLater: (itemIds) => dispatch({ type: 'saveForLater', at: now(), itemIds }),
       removeFromWishlist: (itemId) => dispatch({ type: 'removeFromWishlist', at: now(), itemId }),
-      claimMilestoneRewards: (rewards) => dispatch({ type: 'claimMilestoneRewards', at: now(), rewards }),
+      claimRewards: (rewards) => dispatch({ type: 'claimRewards', at: now(), rewards }),
       startQuest: (questId) => dispatch({ type: 'startQuest', at: now(), questId }),
       claimQuest: (questId) => dispatch({ type: 'claimQuest', at: now(), questId }),
       setFeatured: (monsterId) => dispatch({ type: 'setFeatured', at: now(), monsterId }),
       resetDemo: () => dispatch({ type: 'resetDemo', at: now() }),
+      clearSampleData: () => dispatch({ type: 'clearSampleData', at: now() }),
       clearAll: () => dispatch({ type: 'clearAll', at: now() }),
     };
   }, [state, syncStatus]);
