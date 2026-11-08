@@ -16,7 +16,9 @@ export interface PaypalTransaction {
   status: OrderStatus;
   failure_reason: string | null;
   created_at: string;
+  updated_at: string;
   captured_at: string | null;
+  is_demo: boolean;
 }
 
 export interface SavingsGoal {
@@ -27,12 +29,14 @@ export interface SavingsGoal {
   deadline: string | null;
   completed_at: string | null;
   created_at: string;
+  is_demo: boolean;
 }
 
 export interface GoalReward {
   id: string;
   goal_id: string;
   milestone: number;
+  order_id: string | null;
   granted_at: string;
 }
 
@@ -55,12 +59,15 @@ export function useTransactions() {
     queryFn: async (): Promise<PaypalTransaction[]> => {
       const { data, error } = await supabase
         .from('shop_orders')
-        .select('id, paypal_order_id, paypal_capture_id, kind, goal_id, item_ids, amount_cents, currency, status, failure_reason, created_at, captured_at')
+        .select('id, paypal_order_id, paypal_capture_id, kind, goal_id, item_ids, amount_cents, currency, status, failure_reason, created_at, updated_at, captured_at, is_demo')
         .order('created_at', { ascending: false })
         .limit(200);
       if (error) throw new Error('Your transactions could not be loaded.');
       return (data ?? []) as PaypalTransaction[];
     },
+    // While PayPal is still confirming a payment (e.g. waiting on the webhook), keep checking.
+    refetchInterval: (query) =>
+      (query.state.data ?? []).some((tx) => tx.status === 'pending' || tx.status === 'capturing') ? 5000 : false,
   });
 }
 
@@ -70,7 +77,7 @@ export function useGoals() {
     queryFn: async (): Promise<SavingsGoal[]> => {
       const { data, error } = await supabase
         .from('savings_goals')
-        .select('id, name, target_cents, contributed_cents, deadline, completed_at, created_at')
+        .select('id, name, target_cents, contributed_cents, deadline, completed_at, created_at, is_demo')
         .order('created_at', { ascending: false });
       if (error) throw new Error('Your savings goals could not be loaded.');
       return data ?? [];
@@ -84,7 +91,7 @@ export function useGoalRewards() {
     queryFn: async (): Promise<GoalReward[]> => {
       const { data, error } = await supabase
         .from('goal_rewards')
-        .select('id, goal_id, milestone, granted_at')
+        .select('id, goal_id, milestone, order_id, granted_at')
         .order('granted_at', { ascending: true });
       if (error) throw new Error('Your milestone rewards could not be loaded.');
       return data ?? [];
@@ -106,6 +113,13 @@ export function useInventory() {
 export function useRefreshLedger() {
   const queryClient = useQueryClient();
   return () => queryClient.invalidateQueries({ queryKey: ['ledger'] });
+}
+
+/** Total of verified (completed) PayPal Sandbox goal contributions, excluding demo rows. */
+export function totalSavedCents(transactions: PaypalTransaction[], includeDemo = false): number {
+  return transactions
+    .filter((tx) => tx.kind === 'goal_contribution' && tx.status === 'completed' && (includeDemo || !tx.is_demo))
+    .reduce((sum, tx) => sum + tx.amount_cents, 0);
 }
 
 export function goalProgress(goal: Pick<SavingsGoal, 'target_cents' | 'contributed_cents'>): number {

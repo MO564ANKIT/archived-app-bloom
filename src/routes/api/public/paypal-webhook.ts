@@ -20,8 +20,11 @@ export const Route = createFileRoute("/api/public/paypal-webhook")({
           const event = webhook.parseWebhookEvent(parsed);
           if (!event) return new Response("Invalid event", { status: 400 });
 
-          if (!process.env["PAYPAL_WEBHOOK_ID"]) {
-            return new Response("Webhook not configured", { status: 503 });
+          const { paypalSetupStatus, logMissingPaypalSecrets } = await import("@/lib/checkout-server/setupStatus");
+          const setup = paypalSetupStatus(process.env);
+          if (!setup.webhooksReady) {
+            logMissingPaypalSecrets("webhook received", setup);
+            return Response.json({ received: false, error: "Sandbox setup needed" }, { status: 503 });
           }
           const verified = await webhook.verifyWebhookSignature(request.headers, parsed);
           if (!verified) return new Response("Signature verification failed", { status: 401 });

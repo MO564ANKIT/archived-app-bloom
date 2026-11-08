@@ -19,6 +19,7 @@ import { Route as QuestsRouteImport } from './routes/quests'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RoastRouteImport } from './routes/roast'
 import { Route as VaultRouteImport } from './routes/vault'
+import { Route as ApiPublicPaypalHealthRouteImport } from './routes/api/public/paypal-health'
 import { Route as ApiPublicPaypalWebhookRouteImport } from './routes/api/public/paypal-webhook'
 
 const IndexRoute = IndexRouteImport.update({
@@ -71,6 +72,11 @@ const VaultRoute = VaultRouteImport.update({
   path: '/vault',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicPaypalHealthRoute = ApiPublicPaypalHealthRouteImport.update({
+  id: '/api/public/paypal-health',
+  path: '/api/public/paypal-health',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicPaypalWebhookRoute = ApiPublicPaypalWebhookRouteImport.update({
   id: '/api/public/paypal-webhook',
   path: '/api/public/paypal-webhook',
@@ -88,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/roast': typeof RoastRoute
   '/vault': typeof VaultRoute
+  '/api/public/paypal-health': typeof ApiPublicPaypalHealthRoute
   '/api/public/paypal-webhook': typeof ApiPublicPaypalWebhookRoute
 }
 export interface FileRoutesByTo {
@@ -101,6 +108,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/roast': typeof RoastRoute
   '/vault': typeof VaultRoute
+  '/api/public/paypal-health': typeof ApiPublicPaypalHealthRoute
   '/api/public/paypal-webhook': typeof ApiPublicPaypalWebhookRoute
 }
 export interface FileRoutesById {
@@ -115,6 +123,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/roast': typeof RoastRoute
   '/vault': typeof VaultRoute
+  '/api/public/paypal-health': typeof ApiPublicPaypalHealthRoute
   '/api/public/paypal-webhook': typeof ApiPublicPaypalWebhookRoute
 }
 export interface FileRouteTypes {
@@ -130,6 +139,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/roast'
     | '/vault'
+    | '/api/public/paypal-health'
     | '/api/public/paypal-webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -143,6 +153,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/roast'
     | '/vault'
+    | '/api/public/paypal-health'
     | '/api/public/paypal-webhook'
   id:
     | '__root__'
@@ -156,6 +167,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/roast'
     | '/vault'
+    | '/api/public/paypal-health'
     | '/api/public/paypal-webhook'
   fileRoutesById: FileRoutesById
 }
@@ -170,6 +182,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   RoastRoute: typeof RoastRoute
   VaultRoute: typeof VaultRoute
+  ApiPublicPaypalHealthRoute: typeof ApiPublicPaypalHealthRoute
   ApiPublicPaypalWebhookRoute: typeof ApiPublicPaypalWebhookRoute
 }
 
@@ -245,6 +258,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VaultRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/paypal-health': {
+      id: '/api/public/paypal-health'
+      path: '/api/public/paypal-health'
+      fullPath: '/api/public/paypal-health'
+      preLoaderRoute: typeof ApiPublicPaypalHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/paypal-webhook': {
       id: '/api/public/paypal-webhook'
       path: '/api/public/paypal-webhook'
@@ -266,6 +286,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   RoastRoute: RoastRoute,
   VaultRoute: VaultRoute,
+  ApiPublicPaypalHealthRoute: ApiPublicPaypalHealthRoute,
   ApiPublicPaypalWebhookRoute: ApiPublicPaypalWebhookRoute,
 }
 export const routeTree = rootRouteImport

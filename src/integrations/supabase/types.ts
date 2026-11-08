@@ -150,6 +150,7 @@ export type Database = {
           created_at: string
           deadline: string | null
           id: string
+          is_demo: boolean
           name: string
           target_cents: number
           user_id: string
@@ -160,6 +161,7 @@ export type Database = {
           created_at?: string
           deadline?: string | null
           id?: string
+          is_demo?: boolean
           name: string
           target_cents: number
           user_id?: string
@@ -170,6 +172,7 @@ export type Database = {
           created_at?: string
           deadline?: string | null
           id?: string
+          is_demo?: boolean
           name?: string
           target_cents?: number
           user_id?: string
@@ -185,6 +188,7 @@ export type Database = {
           failure_reason: string | null
           goal_id: string | null
           id: string
+          is_demo: boolean
           item_ids: string[]
           kind: string
           paypal_capture_id: string | null
@@ -201,6 +205,7 @@ export type Database = {
           failure_reason?: string | null
           goal_id?: string | null
           id?: string
+          is_demo?: boolean
           item_ids: string[]
           kind?: string
           paypal_capture_id?: string | null
@@ -217,6 +222,7 @@ export type Database = {
           failure_reason?: string | null
           goal_id?: string | null
           id?: string
+          is_demo?: boolean
           item_ids?: string[]
           kind?: string
           paypal_capture_id?: string | null
@@ -279,6 +285,8 @@ export type Database = {
         Args: { _capture_id: string; _order_id: string }
         Returns: Json
       }
+      reset_demo_journey: { Args: { _user_id: string }; Returns: undefined }
+      start_demo_journey: { Args: { _user_id: string }; Returns: Json }
     }
     Enums: {
       [_ in never]: never
