@@ -14,16 +14,27 @@ export type CaptureResult =
   | { status: 'failed'; orderId: string; message: string }
   | { status: 'pending'; orderId: string; message: string };
 
+/** A checkout error with an optional machine-readable code (e.g. "setup_needed"). */
+export class CheckoutError extends Error {
+  constructor(
+    message: string,
+    readonly code?: 'setup_needed',
+  ) {
+    super(message);
+    this.name = 'CheckoutError';
+  }
+}
+
 async function postCheckout(body: CheckoutInput): Promise<CheckoutBody> {
   let result: CheckoutResponse;
   try {
     result = await paypalCheckout({ data: body });
   } catch (err) {
     const message = err instanceof Error ? err.message : '';
-    if (/unauthorized/i.test(message)) throw new Error('Sign in to continue checkout.');
-    throw new Error('Could not reach the payment service. Check your connection and try again.');
+    if (/unauthorized/i.test(message)) throw new CheckoutError('Sign in to continue checkout.');
+    throw new CheckoutError('Could not reach the payment service. Check your connection and try again.');
   }
-  if (!result.ok) throw new Error(result.error);
+  if (!result.ok) throw new CheckoutError(result.error, result.code);
   return result.body;
 }
 

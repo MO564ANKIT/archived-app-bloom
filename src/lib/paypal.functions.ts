@@ -83,3 +83,18 @@ export const paypalCheckout = createServerFn({ method: "POST" })
       return { ok: false, error: "Something went wrong with the payment service. Please try again." };
     }
   });
+
+export interface PaypalSetupView {
+  checkoutReady: boolean;
+  webhooksReady: boolean;
+}
+
+// Tells the signed-in player whether Sandbox checkout and webhooks are configured (booleans only).
+export const paypalSetup = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async (): Promise<PaypalSetupView> => {
+    const { paypalSetupStatus, logMissingPaypalSecrets } = await import("./checkout-server/setupStatus");
+    const status = paypalSetupStatus(process.env);
+    logMissingPaypalSecrets("setup check", status);
+    return { checkoutReady: status.checkoutReady, webhooksReady: status.webhooksReady };
+  });
