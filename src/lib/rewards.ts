@@ -10,11 +10,7 @@ export function contributionXp(amountCents: number): number {
 }
 
 /** XP Saverion earns from one verified capture: the contribution itself plus any newly granted milestones. */
-export function captureXp(kind: 'shop' | 'goal_contribution', amountCents: number, milestones: number[], milestoneXp: (m: number) => number = defaultMilestoneXp): number {
+export function captureXp(kind: 'shop' | 'goal_contribution', amountCents: number, milestones: number[]): number {
   if (kind !== 'goal_contribution') return 0;
-  return contributionXp(amountCents) + milestones.reduce((sum, m) => sum + milestoneXp(m), 0);
-}
-
-function defaultMilestoneXp(milestone: number): number {
-  return MILESTONE_REWARDS[milestone]?.xp ?? 0;
+  return contributionXp(amountCents) + milestones.reduce((sum, m) => sum + (MILESTONE_REWARDS[m]?.xp ?? 0), 0);
 }
