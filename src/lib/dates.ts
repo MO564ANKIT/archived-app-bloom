@@ -45,3 +45,8 @@ export function formatMonthLabel(monthKey: string): string {
   const [year, month] = monthKey.split('-').map(Number);
   return new Date(year, month - 1, 1).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
 }
+
+/** Whole days from one date key (YYYY-MM-DD) to another; negative when the target is in the past. */
+export function daysBetweenKeys(fromKey: string, toKey: string): number {
+  return Math.round((parseDateKey(toKey).getTime() - parseDateKey(fromKey).getTime()) / 86_400_000);
+}
