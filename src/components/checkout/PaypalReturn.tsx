@@ -8,7 +8,7 @@ import { LOOT_BY_ID, MILESTONE_REWARDS } from '@/lib/lootCatalogue';
 import { formatUsdCents } from '@/lib/money';
 import { useRefreshLedger } from '@/lib/ledger';
 import { getLevelProgress } from '@/lib/monsters';
-import { contributionXp } from '@/lib/rewards';
+import { captureXp } from '@/lib/rewards';
 import { cancelPaypalOrder, capturePaypalOrder, type CaptureResult } from '@/lib/paypalCheckout';
 import { useGame } from '@/state/gameContext';
 
@@ -32,12 +32,6 @@ function readPaypalReturn(): PaypalReturnRequest | null {
   if (params.get('paypal') === 'return') return { kind: 'return', orderId };
   if (params.get('paypal') === 'cancel') return { kind: 'cancel', orderId };
   return null;
-}
-
-/** XP Saverion earns from one verified goal contribution: the contribution plus any new milestones. */
-export function xpForCapture(result: Pick<Extract<CaptureResult, { status: 'completed' }>, 'kind' | 'amountCents' | 'milestones'>): number {
-  if (result.kind !== 'goal_contribution') return 0;
-  return contributionXp(result.amountCents) + result.milestones.reduce((sum, m) => sum + (MILESTONE_REWARDS[m]?.xp ?? 0), 0);
 }
 
 export function PaypalReturn() {
@@ -152,7 +146,7 @@ export function PaypalReturn() {
           {outcome.result.kind === 'goal_contribution' && (
             <div className="rounded-2xl border border-neon-400/40 bg-neon-500/10 p-4 text-center">
               <p className="flex items-center justify-center gap-2 font-display text-3xl font-bold text-neon-300">
-                <Sparkles className="h-6 w-6" /> +{xpForCapture(outcome.result)} XP
+                <Sparkles className="h-6 w-6" /> +{captureXp(outcome.result.kind, outcome.result.amountCents, outcome.result.milestones)} XP
               </p>
               <p className="mt-1 text-sm text-ink-100">
                 {live.level > levelBefore
