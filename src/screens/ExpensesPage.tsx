@@ -5,6 +5,7 @@ import { BudgetForm } from '@/components/expenses/BudgetForm';
 import { CategoryBreakdown } from '@/components/expenses/CategoryBreakdown';
 import { ExpenseForm } from '@/components/expenses/ExpenseForm';
 import { ExpenseList } from '@/components/expenses/ExpenseList';
+import { MonsterSpendSpotlight } from '@/components/expenses/MonsterSpendSpotlight';
 import { Button } from '@/components/kit/Button';
 import { EmptyState } from '@/components/kit/EmptyState';
 import { Modal } from '@/components/kit/Modal';
@@ -108,11 +109,14 @@ export function ExpensesPage() {
           )}
         </section>
 
-        <section className="card p-5 sm:p-7 lg:col-span-2">
-          <h2 className="mb-1 text-lg font-bold text-ink-50">Category breakdown</h2>
-          <p className="mb-5 text-xs text-ink-400">This month. Bars show budget use when a category limit is set.</p>
-          <CategoryBreakdown summary={summary} />
-        </section>
+        <div className="space-y-6 self-start lg:sticky lg:top-24 lg:col-span-2">
+          <section className="card p-5 sm:p-7">
+            <h2 className="mb-1 text-lg font-bold text-ink-50">Category breakdown</h2>
+            <p className="mb-5 text-xs text-ink-400">This month. Bars show budget use when a category limit is set.</p>
+            <CategoryBreakdown summary={summary} />
+          </section>
+          <MonsterSpendSpotlight summary={summary} monsters={state.monsters} />
+        </div>
       </div>
 
       <Modal
