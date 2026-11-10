@@ -16,7 +16,7 @@ export function StreakWeek({ events, todayKey, streak, onLogToday }: StreakWeekP
   const loggedToday = days[days.length - 1].active;
 
   return (
-    <section className="card p-6 sm:p-8">
+    <section className="card flex h-full flex-col p-6 sm:p-8">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <h2 className="flex items-center gap-2 text-lg font-bold text-ink-50">
           <Flame className="h-5 w-5 text-amber-300" /> {streak} day streak
@@ -27,7 +27,7 @@ export function StreakWeek({ events, todayKey, streak, onLogToday }: StreakWeekP
           </Button>
         )}
       </div>
-      <ol className="grid grid-cols-7 gap-2 sm:gap-3">
+      <ol className="my-auto grid grid-cols-7 gap-2 sm:gap-3">
         {days.map((day) => (
           <li key={day.key} className="flex flex-col items-center gap-2">
             <span
@@ -46,7 +46,9 @@ export function StreakWeek({ events, todayKey, streak, onLogToday }: StreakWeekP
           </li>
         ))}
       </ol>
-      <p className="mt-5 text-center text-xs text-ink-400">Log something every day to keep the flame lit.</p>
+      <p className="mt-5 text-center text-xs text-ink-400">
+        {days.filter((d) => d.active).length} of 7 days logged this week · Log something every day to keep the flame lit.
+      </p>
     </section>
   );
 }
