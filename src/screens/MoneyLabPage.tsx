@@ -9,6 +9,8 @@ import { buildAlternatives, simulatePurchase, summarizeMonth, type Simulation, t
 import { formatMoney, parseAmountToPaise } from '@/lib/money';
 import { cn } from '@/lib/cn';
 import { useGame } from '@/state/gameContext';
+import { PageHero } from '@/components/layout/PageHero';
+import labArt from '@/assets/heroes/money-lab-hero.webp';
 
 const VERDICT_COPY: Record<Verdict, { title: string; tone: string }> = {
   'no-budget': { title: 'No budget set', tone: 'border-aqua-400/40 bg-aqua-500/10 text-aqua-200' },
@@ -57,13 +59,17 @@ export function MoneyLabPage() {
 
   return (
     <div className="space-y-8">
-      <header>
-        <p className="text-sm font-medium text-volt-300">Money Lab</p>
-        <h1 className="mt-1 text-3xl font-bold text-ink-50 sm:text-4xl">Test a purchase before you make it.</h1>
-        <p className="mt-2 max-w-2xl text-sm text-ink-300">
-          Simulations use your real budget for {formatMonthLabel(monthKey)} but never create an expense. Nothing here changes your spending.
-        </p>
-      </header>
+      <PageHero
+        eyebrow="Money Lab"
+        tone="volt"
+        title="Test a purchase before you make it."
+        description={
+          <p>
+            Simulations use your real budget for {formatMonthLabel(monthKey)} but never create an expense. Nothing here changes your spending.
+          </p>
+        }
+        art={labArt}
+      />
 
       <div className="grid gap-6 lg:grid-cols-5">
         <section className="card p-6 sm:p-8 lg:col-span-2">

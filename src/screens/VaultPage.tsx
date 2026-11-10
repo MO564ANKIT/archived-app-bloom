@@ -8,6 +8,8 @@ import { STATUS_LABEL, StatusPill } from '@/components/checkout/StatusPill';
 import { LOOT_BY_ID } from '@/lib/lootCatalogue';
 import { formatUsdCents } from '@/lib/money';
 import { useGoals, useTransactions, type OrderStatus, type PaypalTransaction } from '@/lib/ledger';
+import { PageHero } from '@/components/layout/PageHero';
+import vaultArt from '@/assets/heroes/vault-hero.webp';
 
 type KindFilter = 'all' | PaypalTransaction['kind'];
 type StatusFilter = 'all' | OrderStatus;
@@ -54,16 +56,18 @@ export function VaultPage() {
 
   return (
     <div className="space-y-8">
-      <header className="space-y-2">
-        <div className="flex flex-wrap items-center gap-3">
-          <p className="text-sm font-medium text-aqua-300">Transaction Vault</p>
-          <SandboxBadge />
-        </div>
-        <h1 className="text-3xl font-bold text-ink-50 sm:text-4xl">Every payment, on the record.</h1>
-        <p className="max-w-2xl text-sm text-ink-300">
-          Goal contributions and marketplace purchases made through PayPal Sandbox. A payment shows as Verified only after our server confirms it with PayPal. No real money moves.
-        </p>
-      </header>
+      <PageHero
+        eyebrow="Transaction Vault"
+        tone="aqua"
+        badge={<SandboxBadge />}
+        title="Every payment, on the record."
+        description={
+          <p>
+            Goal contributions and marketplace purchases made through PayPal Sandbox. A payment shows as Verified only after our server confirms it with PayPal. No real money moves.
+          </p>
+        }
+        art={vaultArt}
+      />
 
       <div className="grid gap-4 sm:grid-cols-3">
         <Tile label="Verified payments" value={String(rows.filter((tx) => tx.status === 'completed').length)} />

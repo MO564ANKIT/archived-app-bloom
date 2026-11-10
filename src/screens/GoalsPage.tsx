@@ -6,6 +6,8 @@ import { GoalCard } from '@/components/goals/GoalCard';
 import { MonsterProgressCard } from '@/components/goals/MonsterProgressCard';
 import { Skeleton } from '@/components/kit/Skeleton';
 import { useGoalRewards, useGoals, useTransactions } from '@/lib/ledger';
+import { PageHero } from '@/components/layout/PageHero';
+import goalsArt from '@/assets/heroes/goals-hero.webp';
 
 export function GoalsPage() {
   const goals = useGoals();
@@ -14,16 +16,17 @@ export function GoalsPage() {
 
   return (
     <div className="space-y-8">
-      <header className="space-y-2">
-        <div className="flex flex-wrap items-center gap-3">
-          <p className="text-sm font-medium text-neon-400">Save to Level</p>
-          <SandboxBadge />
-        </div>
-        <h1 className="text-3xl font-bold text-ink-50 sm:text-4xl">Pay. Save. Evolve.</h1>
-        <p className="max-w-2xl text-sm text-ink-300">
-          Set a goal, contribute through PayPal Sandbox, and watch Saverion grow. Progress only moves after our server verifies the capture with PayPal. These are simulated contributions, not real savings deposits.
-        </p>
-      </header>
+      <PageHero
+        eyebrow="Save to Level"
+        badge={<SandboxBadge />}
+        title="Pay. Save. Evolve."
+        description={
+          <p>
+            Set a goal, contribute through PayPal Sandbox, and watch Saverion grow. Progress only moves after our server verifies the capture with PayPal. These are simulated contributions, not real savings deposits.
+          </p>
+        }
+        art={goalsArt}
+      />
 
       <div className="grid gap-6 lg:grid-cols-5">
         <div className="space-y-6 lg:col-span-3">
