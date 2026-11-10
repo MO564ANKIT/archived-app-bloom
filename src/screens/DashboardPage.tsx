@@ -185,11 +185,11 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
               All quests <ArrowRight className="h-4 w-4" />
             </Button>
           </div>
-          <ul className="space-y-3">
+          <ul className="grid gap-3 sm:grid-cols-2">
             {dailyQuests.map(({ quest, shown, done }) => (
               <li
                 key={quest.id}
-                className={`rounded-xl border p-4 transition ${
+                className={`rounded-xl border p-3.5 transition ${
                   done ? 'border-neon-400/35 bg-neon-500/5' : 'border-white/10 bg-night-950/50'
                 }`}
               >
