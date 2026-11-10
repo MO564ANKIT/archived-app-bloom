@@ -53,7 +53,7 @@ export function MonsterSpendSpotlight({ summary, monsters }: MonsterSpendSpotlig
         <Sparkles className="h-3.5 w-3.5" /> Monster spotlight
       </p>
       <div className="mt-4 flex items-center gap-4">
-        <div className="h-28 w-28 shrink-0 animate-[float_4s_ease-in-out_infinite] motion-reduce:animate-none">
+        <div className="h-28 w-28 shrink-0 animate-float motion-reduce:animate-none">
           <MonsterImage monsterId={species.id} stage={stageOf(species.id)} />
         </div>
         <div className="min-w-0">
