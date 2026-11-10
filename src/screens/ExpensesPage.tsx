@@ -15,6 +15,8 @@ import { sortExpenses, summarizeMonth } from '@/lib/finance';
 import { useGame } from '@/state/gameContext';
 import type { Expense } from '@/types';
 import { cn } from '@/lib/cn';
+import { PageHero } from '@/components/layout/PageHero';
+import expensesArt from '@/assets/heroes/expenses-hero.webp';
 
 type EditorState = { mode: 'create' } | { mode: 'edit'; expense: Expense } | null;
 
@@ -32,23 +34,22 @@ export function ExpensesPage() {
 
   return (
     <div className="space-y-8">
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-sm font-medium text-neon-400">Expense tracker</p>
-          <h1 className="mt-1 text-3xl font-bold text-ink-50 sm:text-4xl">Where did the money go?</h1>
-          <p className="mt-2 max-w-xl text-sm text-ink-300">
-            Log each expense as it happens. Every entry also gives XP to a matching monster, so tracking pays off.
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="ghost" onClick={() => setBudgetOpen(true)}>
-            <Wallet className="h-4 w-4" /> Budgets
-          </Button>
-          <Button variant="primary" onClick={() => setEditor({ mode: 'create' })}>
-            <Plus className="h-4 w-4" /> Add expense
-          </Button>
-        </div>
-      </header>
+      <PageHero
+        eyebrow="Expense tracker"
+        title="Where did the money go?"
+        description={<p>Log each expense as it happens. Every entry also gives XP to a matching monster, so tracking pays off.</p>}
+        art={expensesArt}
+        actions={
+          <>
+            <Button variant="primary" onClick={() => setEditor({ mode: 'create' })}>
+              <Plus className="h-4 w-4" /> Add expense
+            </Button>
+            <Button variant="ghost" onClick={() => setBudgetOpen(true)}>
+              <Wallet className="h-4 w-4" /> Budgets
+            </Button>
+          </>
+        }
+      />
 
       {hasSamples && (
         <p className="rounded-2xl border border-amber-400/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">

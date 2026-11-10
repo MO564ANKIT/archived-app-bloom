@@ -23,6 +23,8 @@ import { computeStreak } from '@/lib/progress';
 import { QUESTS, countQuestProgress, questRecordKey } from '@/lib/quests';
 import { useCountUp } from '@/lib/useCountUp';
 import { useGame } from '@/state/gameContext';
+import { PageHero } from '@/components/layout/PageHero';
+import { MonsterImage } from '@/components/monsters/MonsterImage';
 
 interface DashboardPageProps {
   onNavigate: (page: PageId) => void;
@@ -63,11 +65,11 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
 
   return (
     <div className="space-y-6">
-      <header className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-        <div className="flex flex-col gap-2">
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-neon-400">{formatMonthLabel(monthKeyOf(today))}</p>
-          <h1 className="text-3xl font-bold text-ink-50 sm:text-4xl">Your monsters are eating well.</h1>
-          <p className="text-sm text-ink-300">
+      <PageHero
+        eyebrow={formatMonthLabel(monthKeyOf(today))}
+        title="Your monsters are eating well."
+        description={
+          <p>
             {daysLeft} {daysLeft === 1 ? 'day' : 'days'} left this month.{' '}
             {summary.remainingPaise === null
               ? 'Set a monthly budget to start tracking.'
@@ -75,18 +77,21 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
                 ? 'You are over budget. Take it easy this week.'
                 : 'Keep logging to feed your monsters.'}
           </p>
-        </div>
-        <div className="card min-w-[240px] px-6 py-5">
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-ink-400">Remaining this month</p>
-          <p
-            className={`mt-1.5 font-display text-4xl font-bold ${
-              summary.remainingPaise === null ? 'text-ink-300' : over ? 'text-rose-300' : 'text-amber-300'
-            }`}
-          >
-            {summary.remainingPaise === null ? 'Not set' : formatMoney(Math.round(animatedRemaining))}
-          </p>
-        </div>
-      </header>
+        }
+        art={<MonsterImage monsterId={featured.id} stage={featuredProgress.stage} />}
+        aside={
+          <div className="card min-w-[240px] px-6 py-5">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-ink-400">Remaining this month</p>
+            <p
+              className={`mt-1.5 font-display text-4xl font-bold ${
+                summary.remainingPaise === null ? 'text-ink-300' : over ? 'text-rose-300' : 'text-amber-300'
+              }`}
+            >
+              {summary.remainingPaise === null ? 'Not set' : formatMoney(Math.round(animatedRemaining))}
+            </p>
+          </div>
+        }
+      />
 
       <StaggerItem index={0}>
         <section className="card px-4 py-8 sm:px-8">

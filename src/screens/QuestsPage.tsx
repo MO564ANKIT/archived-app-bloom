@@ -6,6 +6,8 @@ import { Celebration } from '@/components/kit/Celebration';
 import { getSpecies } from '@/lib/monsters';
 import { QUESTS, countQuestProgress, questRecordKey, type QuestDefinition } from '@/lib/quests';
 import { useGame } from '@/state/gameContext';
+import { PageHero } from '@/components/layout/PageHero';
+import questsArt from '@/assets/heroes/quests-hero.webp';
 
 export function QuestsPage() {
   const { state, today, startQuest, claimQuest } = useGame();
@@ -32,13 +34,12 @@ export function QuestsPage() {
 
   return (
     <div className="space-y-8">
-      <header>
-        <p className="text-sm font-medium text-neon-400">Quest board</p>
-        <h1 className="mt-1 text-3xl font-bold text-ink-50 sm:text-4xl">Pick a quest. Finish it. Get XP.</h1>
-        <p className="mt-2 max-w-2xl text-sm text-ink-300">
-          Quests reward things you do: tracking, pausing, and skipping. Spending amounts never add or remove XP.
-        </p>
-      </header>
+      <PageHero
+        eyebrow="Quest board"
+        title="Pick a quest. Finish it. Get XP."
+        description={<p>Quests reward things you do: tracking, pausing, and skipping. Spending amounts never add or remove XP.</p>}
+        art={questsArt}
+      />
 
       <div className="grid gap-4 sm:grid-cols-2">
         <SummaryTile label="Daily quests done today" value={`${completedToday} / ${daily.length}`} />

@@ -8,6 +8,8 @@ import { ProgressBar } from '@/components/kit/ProgressBar';
 import { MONSTER_SPECIES, STAGE_START_LEVELS, getLevelProgress, stageName, type MonsterSpecies, type Stage } from '@/lib/monsters';
 import type { MonsterProgress, MonsterId } from '@/types';
 import { useGame } from '@/state/gameContext';
+import { PageHero } from '@/components/layout/PageHero';
+import { MonsterImage } from '@/components/monsters/MonsterImage';
 
 const STAGES: Stage[] = [1, 2, 3];
 
@@ -20,28 +22,27 @@ export function MonstersPage() {
 
   return (
     <div className="space-y-8">
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-sm font-medium text-neon-400">Monster collection</p>
-          <h1 className="mt-1 text-3xl font-bold text-ink-50 sm:text-4xl">Your crew of six</h1>
-          <p className="mt-2 max-w-xl text-sm text-ink-300">
-            Each expense feeds the monster that matches its category. Monsters evolve at level 10 and level 20.
-          </p>
-        </div>
-        <div className="card min-w-[200px] px-5 py-4">
-          <p className="text-xs font-medium uppercase tracking-wider text-ink-400">Collection</p>
-          <p className="mt-1 font-display text-2xl font-bold text-neon-300">
-            {unlockedCount} / {MONSTER_SPECIES.length} unlocked
-          </p>
-          <div className="mt-3">
-            <ProgressBar
-              value={Math.round((unlockedCount / MONSTER_SPECIES.length) * 100)}
-              tone="neon"
-              label="Collection completion"
-            />
+      <PageHero
+        eyebrow="Monster collection"
+        title="Your crew of six"
+        description={<p>Each expense feeds the monster that matches its category. Monsters evolve at level 10 and level 20.</p>}
+        art={<MonsterImage monsterId={state.featuredMonsterId} stage={getLevelProgress(state.monsters[state.featuredMonsterId].xp).stage} />}
+        aside={
+          <div className="card min-w-[200px] px-5 py-4">
+            <p className="text-xs font-medium uppercase tracking-wider text-ink-400">Collection</p>
+            <p className="mt-1 font-display text-2xl font-bold text-neon-300">
+              {unlockedCount} / {MONSTER_SPECIES.length} unlocked
+            </p>
+            <div className="mt-3">
+              <ProgressBar
+                value={Math.round((unlockedCount / MONSTER_SPECIES.length) * 100)}
+                tone="neon"
+                label="Collection completion"
+              />
+            </div>
           </div>
-        </div>
-      </header>
+        }
+      />
 
       <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
         {MONSTER_SPECIES.map((species) => (

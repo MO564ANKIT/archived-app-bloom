@@ -8,6 +8,8 @@ import { cn } from '@/lib/cn';
 import { PERSONALITIES, type Personality } from '@/lib/roast';
 import { requestRoast } from '@/lib/roastAi';
 import { useGame } from '@/state/gameContext';
+import { PageHero } from '@/components/layout/PageHero';
+import roastArt from '@/assets/heroes/roast-hero.webp';
 
 const MAX_MESSAGE_LENGTH = 200;
 const HISTORY_LENGTH = 10;
@@ -95,21 +97,13 @@ export function RoastChatPage() {
 
   return (
     <div className="space-y-8">
-      <header className="flex items-center justify-between gap-6">
-        <div>
-          <p className="text-sm font-medium text-neon-400">Roast Chat</p>
-          <h1 className="mt-1 text-3xl font-bold text-ink-50 sm:text-4xl">Get roasted, lovingly or not.</h1>
-          <p className="mt-2 max-w-2xl text-sm text-ink-300">
-            Type a price to test a purchase. Replies use your real budget and streak.
-          </p>
-        </div>
-        <div className="hidden shrink-0 flex-col items-center gap-1 sm:flex">
-          <div className="h-24 w-24">
-            <MonsterImage monsterId={featuredSpecies.id} stage={featuredStage} />
-          </div>
-          <span className="text-[10px] font-bold uppercase tracking-widest text-ink-400">{featuredSpecies.name}</span>
-        </div>
-      </header>
+      <PageHero
+        eyebrow="Roast Chat"
+        tone="amber"
+        title="Get roasted, lovingly or not."
+        description={<p>Type a price to test a purchase. Replies use your real budget and streak.</p>}
+        art={roastArt}
+      />
 
       <div className="flex items-start gap-3 rounded-2xl border border-aqua-400/30 bg-aqua-500/10 p-4 text-sm text-aqua-100">
         <Info className="mt-0.5 h-4 w-4 shrink-0" />

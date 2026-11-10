@@ -11,6 +11,8 @@ import { formatUsdCents } from '@/lib/money';
 import { useInventory } from '@/lib/ledger';
 import { cn } from '@/lib/cn';
 import { useGame } from '@/state/gameContext';
+import { PageHero } from '@/components/layout/PageHero';
+import lootArt from '@/assets/heroes/loot-shop-hero.webp';
 
 type TypeFilter = 'all' | ItemType;
 const TYPE_FILTERS: TypeFilter[] = ['all', 'skin', 'accessory', 'effect', 'background', 'collection', 'seasonal'];
@@ -49,16 +51,18 @@ export function LootShopPage() {
 
   return (
     <div className="space-y-8">
-      <header className="space-y-2">
-        <div className="flex flex-wrap items-center gap-3">
-          <p className="text-sm font-medium text-amber-300">Monster Marketplace</p>
-          <SandboxBadge />
-        </div>
-        <h1 className="text-3xl font-bold text-ink-50 sm:text-4xl">Dress up your monsters</h1>
-        <p className="max-w-2xl text-sm text-ink-300">
-          Cosmetic items only, priced in US dollars. Every checkout is checked by the AI Purchase Guardian first and runs in PayPal Sandbox, so no real money moves. Items unlock only after PayPal confirms the payment.
-        </p>
-      </header>
+      <PageHero
+        eyebrow="Monster Marketplace"
+        tone="amber"
+        badge={<SandboxBadge />}
+        title="Dress up your monsters"
+        description={
+          <p>
+            Cosmetic items only, priced in US dollars. Every checkout is checked by the AI Purchase Guardian first and runs in PayPal Sandbox, so no real money moves. Items unlock only after PayPal confirms the payment.
+          </p>
+        }
+        art={lootArt}
+      />
 
       <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by item type">
         {TYPE_FILTERS.map((type) => (
