@@ -189,13 +189,13 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
             {dailyQuests.map(({ quest, shown, done }) => (
               <li
                 key={quest.id}
-                className={`rounded-xl border p-3.5 transition ${
+                className={`rounded-xl border p-3.5 transition sm:odd:last:col-span-2 ${
                   done ? 'border-neon-400/35 bg-neon-500/5' : 'border-white/10 bg-night-950/50'
                 }`}
               >
                 <div className="flex items-center justify-between gap-4">
                   <div className="min-w-0">
-                    <p className="truncate font-semibold text-ink-50">{quest.name}</p>
+                    <p className="font-semibold leading-snug text-ink-50">{quest.name}</p>
                     <p className="text-xs text-ink-400">{done ? 'Completed today' : `${shown} / ${quest.goal.count} done`}</p>
                   </div>
                   <span
