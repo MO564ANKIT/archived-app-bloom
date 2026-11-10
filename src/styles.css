@@ -234,6 +234,22 @@
     @apply -right-px -bottom-px rounded-br-2xl border-r-2 border-b-2;
   }
 
+  .hero-panel {
+    @apply relative overflow-hidden rounded-3xl border border-volt-500/30 shadow-card;
+    background:
+      radial-gradient(120% 140% at 100% 0%, rgba(139, 92, 246, 0.35), transparent 55%),
+      radial-gradient(80% 120% at 0% 100%, rgba(34, 211, 238, 0.12), transparent 60%),
+      linear-gradient(135deg, var(--color-night-800), var(--color-night-950));
+  }
+
+  .hero-panel::before {
+    @apply pointer-events-none absolute inset-0 opacity-40;
+    content: "";
+    background-image: radial-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+    background-size: 18px 18px;
+    mask-image: linear-gradient(90deg, transparent, black 60%);
+  }
+
   .input {
     @apply w-full rounded-xl border border-white/10 bg-night-950/70 px-4 py-3 text-ink-50 transition placeholder:text-ink-500 focus:border-neon-400 focus:ring-2 focus:ring-neon-500/40 focus:outline-none;
   }
