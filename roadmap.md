@@ -19,3 +19,7 @@
 - [ ] 4. Reliability: install/build/lint/tests, pin loose deps, new tests, per-route error boundaries
 - [ ] 5. Docs: README for judges, roadmap, docs/DEMO_SCRIPT.md
 - [ ] 6. UI polish: 360px mobile, skeletons/empty states/toasts, monster assets
+
+## Phase 3 — Game-style visual polish
+- [ ] Game-style hero banner with artwork on every page
+- [ ] Once-a-day welcome pop-up (no fake rewards)
