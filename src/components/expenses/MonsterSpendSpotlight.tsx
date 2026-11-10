@@ -72,8 +72,8 @@ export function MonsterSpendSpotlight({ summary, monsters }: MonsterSpendSpotlig
       {fed.length > 1 && (
         <div className="mt-5">
           <p className="mb-3 text-xs font-bold uppercase tracking-widest text-ink-400">Also growing this month</p>
-          <ul className="grid grid-cols-3 gap-3">
-            {fed.slice(1, 7).map(({ entry: other, species: monster }) => (
+          <ul className="grid grid-cols-4 gap-2">
+            {fed.slice(1, 5).map(({ entry: other, species: monster }) => (
               <li
                 key={monster.id}
                 className="flex flex-col items-center rounded-xl border border-white/10 bg-night-950/50 p-2 text-center"
